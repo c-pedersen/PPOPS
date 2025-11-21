@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "PPOPS"
+version = "0.0.0"
+authors = [
+  { name = "Corey Pedersen", email = "coreyped@gmail.com" },
+]
+description = "Performance Prediction for Optical Particle Spectrometer"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.7"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+keywords = ["OPS", "OPC", "POPS", "Optical Particle Spectrometer"]
+
+dependencies = [
+    "numpy>=1.18.0",
+    "pandas>=1.0.0", 
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8.0.0",
+    "pytest-cov>=6.0.0",
+]
+dev = [
+    "build>=1.0.0",
+    "twine>=6.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/c-pedersen/PPOPS"
+Repository = "https://github.com/c-pedersen/PPOPS"
+Documentation = "https://github.com/c-pedersen/PPOPS#readme"
+"Bug Tracker" = "https://github.com/c-pedersen/PPOPS/issues"
+
+[tool.setuptools]
+packages = ["ppops"]
+
+[tool.pyright]
+include = ["src"]
+exclude = ["**/__pycache__"]
+typeCheckingMode = "standard"
+
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 72
+max-line-length = 88
+
+# pyproject.toml
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
