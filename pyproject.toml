@@ -53,7 +53,7 @@ Documentation = "https://github.com/c-pedersen/PPOPS#readme"
 "Bug Tracker" = "https://github.com/c-pedersen/PPOPS/issues"
 
 [tool.setuptools]
-package_dir = ["src"]
+packages = ["src"]
 
 [tool.pyright]
 include = ["src"]
