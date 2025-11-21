@@ -36,6 +36,11 @@ test = [
     "pytest>=8.0.0",
     "pytest-cov>=6.0.0",
 ]
+docs = [
+    "sphinx>=7.0.0",
+    "sphinx-rtd-theme>=2.0.0",
+    "sphinx-autodoc-typehints>=1.25.0",
+]
 dev = [
     "build>=1.0.0",
     "twine>=6.0.0",
@@ -48,7 +53,7 @@ Documentation = "https://github.com/c-pedersen/PPOPS#readme"
 "Bug Tracker" = "https://github.com/c-pedersen/PPOPS/issues"
 
 [tool.setuptools]
-packages = ["ppops"]
+package_dir = ["src"]
 
 [tool.pyright]
 include = ["src"]
