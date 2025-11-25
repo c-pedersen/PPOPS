@@ -124,7 +124,7 @@ class OpticalParticleSpectrometer:
         trunc_qsca = total_signal / size_parameter**2
         geometric_cross_section = (
             np.pi * diameter**2
-        )  # NOTE: SHOULD THIS BE RADIUS?
+        )  # scaled by constants, the physical size
         trunc_csca = trunc_qsca * geometric_cross_section
 
         return trunc_csca
