@@ -1,0 +1,13 @@
+Calibration points extracted by eye from calibration figure provided by 
+Yaowei Li on 12/01/25. Particles are polystyrene latex beads that are a 
+standard size and for some of the data, they are further size-selected 
+using a Differential Mobility Analyzer (DMA).
+
+Diameter (nm),Signal (arb.),DMA (bool)
+300,2000,0
+300,1600,1
+500,3100,1
+600,6100,0
+600,5000,1
+800,7000,0
+1100,12000,0
