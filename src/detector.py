@@ -10,14 +10,15 @@ Constants:
     - ELEMENTARY_CHARGE: Electron charge (C)
     - ANODE_RADIANT_SENSITIVITY: Anode radiant sensitivity (A/W)
     - DARK_CURRENT: Dark current noise (A)
-
-    - S_dark: Dark current noise (C^2/s)
-    - S_preamp: Preamplifier noise (C^2/s)
-    - bw: Bandwidth (Hz)
+    - BANDWIDTH: Bandwidth (Hz)
+    - INPUT_CURRENT_NOISE: Preamplifier input current noise (A/√Hz)
 
 Functions:
-    noise_terms(): Returns noise terms for signal and noise
-        calculations.
+    - laser_power_density(laser_power, beam_major, beam_minor): Computes
+      the laser power density at the aerosol stream.
+    - estimate_signal_noise(truncated_csca, laser_power): Estimates
+      signal and noise levels for a given truncated scattering cross
+      section and laser power.
 
 Citations:
     - Gao, R.S., et al. 2016. A light-weight, high-sensitivity particle
