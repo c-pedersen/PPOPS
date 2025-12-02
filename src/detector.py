@@ -99,7 +99,7 @@ def laser_power_density(
 
 def estimate_signal_noise(
     truncated_csca: float | NDArray[np.float64],
-    laser_power: float = 70,
+    laser_power: float,
     anode_radiant_sensitivity: float = H10720_110_ANODE_RADIANT_SENSITIVITY,
     dark_current: float = H10720_110_DARK_CURRENT,
     bandwidth: float = BANDWIDTH,
@@ -114,7 +114,7 @@ def estimate_signal_noise(
     truncated_csca : float | NDArray[np.float64]
         Truncated scattering cross section in units of µm².
     laser_power : float
-        Laser power in mW. Default is 70 mW.
+        Laser power in mW.
     anode_radiant_sensitivity : float
         Anode radiant sensitivity in A/W. Default is 2.2e5 A/W.
     dark_current : float

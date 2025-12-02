@@ -123,9 +123,7 @@ class OpticalParticleSpectrometer:
         # Compute Cross Sections
         # -------------------------------------------------------------------------
         trunc_qsca = total_signal / size_parameter**2
-        geometric_cross_section = (
-            np.pi * diameter**2
-        )  # NOTE: SHOULD THIS BE RADIUS?
+        geometric_cross_section = np.pi * (diameter / 2)**2
         trunc_csca = trunc_qsca * geometric_cross_section
 
         return trunc_csca
@@ -148,7 +146,7 @@ class OpticalParticleSpectrometer:
         diameter : float
             Diameter of the particle in micrometers.
         laser_power : float
-            Laser power in mW.
+            Laser power in mW. Default is 70 mW.
 
         Returns
         -------
