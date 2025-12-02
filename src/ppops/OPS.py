@@ -98,11 +98,11 @@ class OpticalParticleSpectrometer:
             s12 = mie_s12(ior, size_parameter, np.cos(theta))
             s1[j], s2[j] = s12[0], s12[1]
 
-            phi_max = np.arccos(self.h / (r_min * np.sqrt(1 - np.cos(theta) ** 2)))
+            phi_max = np.arccos(np.clip(self.h / (r_min * np.sqrt(1 - np.cos(theta) ** 2)), -1, 1))
             phi_values = np.linspace(-phi_max, phi_max, n_phi)
 
             for k, phi in enumerate(phi_values):
-                _, _, _, _, ws, wp, _ = ptz2r_sc(phi, theta, self.y0)
+                _, _, _, _, ws, wp, _ = ptz2r_sc(phi, theta, self.h, self.mirror_radius, self.y0)
                 integrand[j, k] = ws * np.abs(s1[j]) ** 2 + wp * np.abs(s2[j]) ** 2
 
         # -------------------------------------------------------------------------
@@ -110,7 +110,7 @@ class OpticalParticleSpectrometer:
         # -------------------------------------------------------------------------
         total_signal = 0.0
         for j, theta in enumerate(theta_values):
-            phi_max = np.arccos(self.h / (r_min * np.sqrt(1 - np.cos(theta) ** 2)))
+            phi_max = np.arccos(np.clip(self.h / (r_min * np.sqrt(1 - np.cos(theta) ** 2)), -1, 1))
             phi_values = np.linspace(-phi_max, phi_max, n_phi)
             d_phi = phi_values[1] - phi_values[0]
             sum_phi = np.sum(integrand[j, :]) * d_phi
