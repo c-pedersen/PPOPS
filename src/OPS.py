@@ -15,6 +15,7 @@ References:
 """
 
 import numpy as np
+import detector
 from mie_modules import mie_s12
 from geometry import ptz2r_sc
 
@@ -128,3 +129,36 @@ class OpticalParticleSpectrometer:
         trunc_csca = trunc_qsca * geometric_cross_section
 
         return trunc_csca
+    
+
+    def estimate_signal(
+        self,
+        ior: complex,
+        diameter: float,
+        laser_power: float = 70,
+    ) -> tuple[float, float]:
+        """
+        Estimate the signal amplitude from the scattered light incident 
+        on the OPS photomultiplier tube (PMT).
+
+        Parameters
+        ----------
+        ior : complex
+            Complex refractive index of the particle.
+        diameter : float
+            Diameter of the particle in micrometers.
+        laser_power : float
+            Laser power in mW.
+
+        Returns
+        -------
+        tuple[float, float]
+            Tuple containing:
+            - signal : float units of Amperes (A)
+            - noise : float units of Amperes (A)
+        """
+
+        trunc_csca = self.truncated_scattering_cross_section(ior, diameter)
+        signal, noise = detector.estimate_signal_noise(trunc_csca, laser_power)
+        
+        return signal, noise
