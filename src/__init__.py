@@ -19,10 +19,12 @@ __url__ = "https://github.com/c-pedersen/PPOPS"
 
 from . import mie_modules
 from . import geometry
+from . import detector
 from .OPS import OpticalParticleSpectrometer
 
 __all__ = [
     "OpticalParticleSpectrometer",
     "mie_modules",
     "geometry",
+    "detector",
 ]
