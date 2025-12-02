@@ -29,6 +29,7 @@ keywords = ["OPS", "OPC", "POPS", "Optical Particle Spectrometer"]
 dependencies = [
     "numpy>=1.18.0",
     "pandas>=1.0.0", 
+    "scipy>=1.15.0",
 ]
 
 [project.optional-dependencies]

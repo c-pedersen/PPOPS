@@ -10,7 +10,7 @@ design.
 
 from importlib.metadata import version
 
-__version__ = version("mypackage")
+__version__ = version("ppops")
 __author__ = "Corey Pedersen, Sophie Abou-Rizk, and Andrew Chu"
 __license__ = "MIT"
 __copyright__ = "2025, Corey Pedersen, Sophie Abou-Rizk, and Andrew Chu"

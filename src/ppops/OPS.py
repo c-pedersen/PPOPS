@@ -15,9 +15,9 @@ References:
 """
 
 import numpy as np
-import detector
-from mie_modules import mie_s12
-from geometry import ptz2r_sc
+from . import detector
+from .mie_modules import mie_s12
+from .geometry import ptz2r_sc
 
 
 class OpticalParticleSpectrometer:
