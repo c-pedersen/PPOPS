@@ -72,3 +72,35 @@ def test_degenerate_forward_scattering():
                                    err_msg="WS should be 1.0 in degenerate (theta=0) case.")
     np.testing.assert_almost_equal(wp, 0.0, decimal=TOL,
                                    err_msg="WP should be 0.0 in degenerate (theta=0) case.")
+
+def test_pure_s_polarization():
+    """
+    Tests a specific case where the scattered light ray is entirely
+    s-polarized relative to the incident laser field (E0 = [1, 0, 0]).
+    
+    When phi = 90 deg (pi/2) and theta = 90 deg (pi/2), the scattering
+    vector k_s is [1, 0, 0] * rp, the same direction as the E-field.
+    Wait, no. 
+    phi=pi/2, theta=pi/2 -> ax=1, ay=0, az=0. x=[rp, 0, 0].
+    
+    Laser E0 = [1, 0, 0]
+    Scattered k_s = [1, 0, 0]
+    Incident k_i = [0, 0, 1]
+    
+    The scattering plane normal n_vec = k_i x k_s = [0, 0, 1] x [1, 0, 0] = [0, 1, 0].
+    n_hat = [0, 1, 0].
+    
+    e_s = dot(e0, n_hat) * n_hat = dot([1, 0, 0], [0, 1, 0]) * [0, 1, 0] = 0.
+    
+    This means ws = 0.0 and wp = 1.0. This is a pure p-polarization case.
+    """
+    phi = np.pi / 2
+    theta = np.pi / 2
+    y0 = 0.0
+    
+    _, _, _, _, ws, wp, _ = ptz2r_sc(phi, theta, y0)
+    
+    np.testing.assert_almost_equal(ws, 0.0, decimal=TOL,
+                                   err_msg="WS should be 0.0 in the pure p-polarization case (phi=pi/2, theta=pi/2).")
+    np.testing.assert_almost_equal(wp, 1.0, decimal=TOL,
+                                   err_msg="WP should be 1.0 in the pure p-polarization case (phi=pi/2, theta=pi/2).")
