@@ -53,3 +53,22 @@ def test_polarization_conservation():
         # Check bounds
         assert 0.0 <= ws <= 1.0
         assert 0.0 <= wp <= 1.0
+
+def test_degenerate_forward_scattering():
+    """
+    Tests the degenerate scattering case (forward scatter, theta=0),
+    where the scattering plane is undefined. The code handles this
+    explicitly by setting ws=1.0 and wp=0.0.
+    """
+    phi = 0.5  # Arbitrary azimuthal angle
+    theta = 0.0 # Forward scattering
+    y0 = 0.0
+
+    _, _, _, _, ws, wp, _ = ptz2r_sc(phi, theta, y0)
+
+    # In the degenerate case (n2 < 1e-12), the function should return:
+    # ws = 1.0 and wp = 0.0
+    np.testing.assert_almost_equal(ws, 1.0, decimal=TOL,
+                                   err_msg="WS should be 1.0 in degenerate (theta=0) case.")
+    np.testing.assert_almost_equal(wp, 0.0, decimal=TOL,
+                                   err_msg="WP should be 0.0 in degenerate (theta=0) case.")
