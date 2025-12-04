@@ -30,3 +30,26 @@ def test_basic_run_and_output_structure():
     
     # 3. Check for obvious non-physical results (rp should be positive)
     assert rp > 0, "Positive intersection distance (rp) must be greater than zero."
+
+def test_polarization_conservation():
+    """
+    Tests the fundamental physics sanity check:
+    The s-polarization (ws) and p-polarization (wp) weights must sum to 1.0.
+    """
+    # Test a few different realistic geometries
+    test_cases = [
+        (0.0, np.pi / 4, 0.0),      # Phi = 0 (Scattering in y-z plane)
+        (np.pi / 2, np.pi / 2, 5.0), # Phi = 90 deg (Scattering in x-z plane), y-offset
+        (0.8, 1.2, -3.0),           # Arbitrary non-trivial case
+    ]
+
+    for phi, theta, y0 in test_cases:
+        _, _, _, _, ws, wp, _ = ptz2r_sc(phi, theta, y0)
+        
+        # Check that ws + wp equals 1.0 within tolerance
+        np.testing.assert_almost_equal(ws + wp, 1.0, decimal=TOL,
+                                       err_msg=f"Polarization weights (ws + wp) must sum to 1.0 for phi={phi}, theta={theta}, y0={y0}")
+        
+        # Check bounds
+        assert 0.0 <= ws <= 1.0
+        assert 0.0 <= wp <= 1.0
