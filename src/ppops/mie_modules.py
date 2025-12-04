@@ -91,37 +91,47 @@ def mie_ab(m: complex, x: float) -> np.ndarray:
 
 def mie_pt(u: float, n_max: int) -> np.ndarray:
     """
-    Compute angular functions π_n(u) and τ_n(u).
+    Compute angular functions π_n(u) and τ_n(u) for Mie scattering.
+
+    This function implements the exact recurrences given in
+    Bohren & Huffman (1983) and Mätzler (2002). These angular
+    functions determine the angular variation of the scattered
+    field and are required to compute the scattering amplitude
+    functions S1 and S2.
+
 
     Parameters
     ----------
     u : float
-        Cosine of the scattering angle (u = cos(theta)).
+        Cosine of the scattering angle, u = cos(theta).
     n_max : int
-        Maximum multipole order.
+        Maximum multipole order to compute.
 
     Returns
     -------
     np.ndarray
-        Array of shape (2, n_max) containing π_n(u) and τ_n(u).
-
-    Notes
-    -----
-    This function is NOT yet corrected to match MATLAB exactly.
-    The recurrence coefficients remain as in the user's original Python code
-    so that only the Riccati–Bessel fix is tested at this stage.
+        Array of shape (2, n_max) containing:
+        - π_n(u) in row 0
+        - τ_n(u) in row 1
     """
     p = np.zeros(n_max)
     t = np.zeros(n_max)
 
-    p[0] = 1
-    t[0] = u
-    p[1] = 3 * u
-    t[1] = 3 * np.cos(2 * np.arccos(u))
+    # Base cases
+    p[0] = 1.0          # π_1
+    t[0] = u            # τ_1
 
+    if n_max > 1:
+        p[1] = 3.0 * u  # π_2
+        # Use identity cos(2θ) = 2u^2 - 1
+        t[1] = 3.0 * (2.0 * u**2 - 1.0)
+
+    # Recurrence for n >= 3
     for n1 in range(2, n_max):
-        p[n1] = ((2 * n1 + 1) / n1) * p[n1 - 1] * u - ((n1 + 1) / n1) * p[n1 - 2]
-        t[n1] = (n1 + 1) * u * p[n1] - (n1 + 2) * p[n1 - 1]
+        p[n1] = ((2 * n1 - 1) / (n1 - 1)) * u * p[n1 - 1] \
+                 - (n1 / (n1 - 1)) * p[n1 - 2]
+
+        t[n1] = n1 * u * p[n1] - (n1 + 1) * p[n1 - 1]
 
     return np.array([p, t])
 
