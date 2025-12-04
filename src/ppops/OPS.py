@@ -95,7 +95,7 @@ class OpticalParticleSpectrometer:
         s2 = np.zeros_like(theta_values, dtype=complex)
 
         for j, theta in enumerate(theta_values):
-            s12 = mie_s12(ior, size_parameter, np.cos(theta))
+            s12 = mie_s12(ior, size_parameter, -np.cos(theta))
             s1[j], s2[j] = s12[0], s12[1]
 
             phi_max = np.arccos(np.clip(self.h / (r_min * np.sqrt(1 - np.cos(theta) ** 2)), -1, 1))
