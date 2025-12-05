@@ -87,8 +87,8 @@ def mie_pt(u: float, n_max: int) -> np.ndarray:
 
     # Recurrence relation for higher-order terms
     for n1 in range(2, n_max):
-        p[n1] = ((2 * n1 + 1) / n1) * p[n1 - 1] * u - ((n1 + 1) / n1) * p[n1 - 2]
-        t[n1] = (n1 + 1) * u * p[n1] - (n1 + 2) * p[n1 - 1]
+        p[n1] = ((2*n1 + 1) * u * p[n1 - 1] - (n1 + 1) * p[n1 - 2]) / n1
+        t[n1] = n1 * u * p[n1] - (n1 + 1) * p[n1 - 1]
 
     return np.array([p, t])
 
