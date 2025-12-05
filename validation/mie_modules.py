@@ -83,7 +83,7 @@ def mie_pt(u: float, n_max: int) -> np.ndarray:
     p[0] = 1
     t[0] = u
     p[1] = 3 * u
-    t[1] = 3 * np.cos(2 * np.arccos(u))
+    t[1] = 9*u*u - 3
 
     # Recurrence relation for higher-order terms
     for n1 in range(2, n_max):
