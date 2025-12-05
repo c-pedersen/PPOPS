@@ -15,6 +15,7 @@ References:
 """
 
 import numpy as np
+from miepython.core import S1_S2
 from . import detector
 from .mie_modules import mie_s12
 from .geometry import ptz2r_sc
@@ -91,13 +92,11 @@ class OpticalParticleSpectrometer:
         # Integration Setup
         # -------------------------------------------------------------------------
         integrand = np.zeros((n_theta, n_phi))
-        s1 = np.zeros_like(theta_values, dtype=complex)
-        s2 = np.zeros_like(theta_values, dtype=complex)
 
+        mp_s1s2 = S1_S2(m=ior, x = size_parameter, mu = np.cos(theta_values), norm = 'wiscombe')
+        s1 = mp_s1s2[0]
+        s2 = mp_s1s2[1]
         for j, theta in enumerate(theta_values):
-            s12 = mie_s12(ior, size_parameter, np.cos(theta))
-            s1[j], s2[j] = s12[0], s12[1]
-
             phi_max = np.arccos(np.clip(self.h / (r_min * np.sqrt(1 - np.cos(theta) ** 2)), -1, 1))
             phi_values = np.linspace(-phi_max, phi_max, n_phi)
 
