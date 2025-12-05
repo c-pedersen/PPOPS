@@ -15,6 +15,7 @@ References:
 """
 
 import numpy as np
+from numpy.typing import ArrayLike
 from miepython.core import S1_S2
 from . import detector
 from .geometry import ptz2r_sc
@@ -92,15 +93,21 @@ class OpticalParticleSpectrometer:
         # -------------------------------------------------------------------------
         integrand = np.zeros((n_theta, n_phi))
 
-        mp_s1s2 = S1_S2(m=ior, x = size_parameter, mu = np.cos(theta_values), norm = 'wiscombe')
+        mp_s1s2 = S1_S2(
+            m=ior, x=size_parameter, mu=np.cos(theta_values), norm="wiscombe"
+        )
         s1 = mp_s1s2[0]
         s2 = mp_s1s2[1]
         for j, theta in enumerate(theta_values):
-            phi_max = np.arccos(np.clip(self.h / (r_min * np.sqrt(1 - np.cos(theta) ** 2)), -1, 1))
+            phi_max = np.arccos(
+                np.clip(self.h / (r_min * np.sqrt(1 - np.cos(theta) ** 2)), -1, 1)
+            )
             phi_values = np.linspace(-phi_max, phi_max, n_phi)
 
             for k, phi in enumerate(phi_values):
-                _, _, _, _, ws, wp, _ = ptz2r_sc(phi, theta, self.h, self.mirror_radius, self.y0)
+                _, _, _, _, ws, wp, _ = ptz2r_sc(
+                    phi, theta, self.h, self.mirror_radius, self.y0
+                )
                 integrand[j, k] = ws * np.abs(s1[j]) ** 2 + wp * np.abs(s2[j]) ** 2
 
         # -------------------------------------------------------------------------
@@ -108,7 +115,9 @@ class OpticalParticleSpectrometer:
         # -------------------------------------------------------------------------
         total_signal = 0.0
         for j, theta in enumerate(theta_values):
-            phi_max = np.arccos(np.clip(self.h / (r_min * np.sqrt(1 - np.cos(theta) ** 2)), -1, 1))
+            phi_max = np.arccos(
+                np.clip(self.h / (r_min * np.sqrt(1 - np.cos(theta) ** 2)), -1, 1)
+            )
             phi_values = np.linspace(-phi_max, phi_max, n_phi)
             d_phi = phi_values[1] - phi_values[0]
             sum_phi = np.sum(integrand[j, :]) * d_phi
@@ -121,27 +130,26 @@ class OpticalParticleSpectrometer:
         # Compute Cross Sections
         # -------------------------------------------------------------------------
         trunc_qsca = total_signal / size_parameter**2
-        geometric_cross_section = np.pi * (diameter / 2)**2
+        geometric_cross_section = np.pi * (diameter / 2) ** 2
         trunc_csca = trunc_qsca * geometric_cross_section
 
         return trunc_csca
-    
 
-    def estimate_signal(
+    def estimate_signal_noise(
         self,
         ior: complex,
-        diameter: float,
+        diameters: float | ArrayLike,
         laser_power: float = 70,
-    ) -> tuple[float, float]:
+    ) -> tuple[float | np.ndarray, float | np.ndarray]:
         """
-        Estimate the signal amplitude from the scattered light incident 
+        Estimate the signal amplitude from the scattered light incident
         on the OPS photomultiplier tube (PMT).
 
         Parameters
         ----------
         ior : complex
             Complex refractive index of the particle.
-        diameter : float
+        diameters : float | np.ndarray
             Diameter of the particle in micrometers.
         laser_power : float
             Laser power in mW. Default is 70 mW.
@@ -153,8 +161,18 @@ class OpticalParticleSpectrometer:
             - signal : float units of Amperes (A)
             - noise : float units of Amperes (A)
         """
+        try:
+            diameters = np.asarray(diameters, dtype=float)
+        except Exception as e:
+            raise TypeError("Diameters must be convertible to a numpy array of floats") from e
 
-        trunc_csca = self.truncated_scattering_cross_section(ior, diameter)
+        trunc_csca = np.array([])
+        for diameter in diameters:
+            trunc_csca = np.append(
+                trunc_csca,
+                self.truncated_scattering_cross_section(ior, diameter),
+            )
+
         signal, noise = detector.estimate_signal_noise(trunc_csca, laser_power)
-        
+
         return signal, noise
