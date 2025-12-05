@@ -29,7 +29,7 @@ def mie_ab(m: complex, x: float) -> np.ndarray:
         x (float): Size parameter, defined as π * D / λ.
 
     Returns:
-        np.ndarray: A 2×N array of complex coefficients [a_n, b_n].
+        np.ndarray: A 2xN array of complex coefficients [a_n, b_n].
     """
     z = m * x
     n_max = round(2 + x + 4 * x ** (1 / 3))

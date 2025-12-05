@@ -17,7 +17,6 @@ References:
 import numpy as np
 from miepython.core import S1_S2
 from . import detector
-from .mie_modules import mie_s12
 from .geometry import ptz2r_sc
 
 

@@ -41,7 +41,7 @@ def compare_tcsca_methods(
         s1[j], s2[j] = s12[0], s12[1]
 
     # Compute S1 and S2 using miepython package
-    miepython_s1, miepython_s2 = miepython.S1_S2(
+    miepython_s1, miepython_s2 = miepython.core.S1_S2(
         m=ior,
         x=size_parameter,
         mu=np.cos(theta_values),
