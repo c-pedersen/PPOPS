@@ -58,8 +58,8 @@ def mie_ab(m: complex, x: float) -> np.ndarray:
     # ------------------------------------------------------------
     # Outgoing spherical Hankel functions
     # ------------------------------------------------------------
-    xi_x = psi_x - 1j * chi_x
-    xi_1x = psi_1x - 1j * chi_1x
+    xi_x = psi_x + 1j * chi_x
+    xi_1x = psi_1x + 1j * chi_1x
 
     # ------------------------------------------------------------
     # Logarithmic derivative D_n(z) via backward recurrence
