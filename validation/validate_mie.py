@@ -2,6 +2,7 @@ import os
 import sys
 import numpy as np
 import miepython
+import matplotlib.pyplot as plt
 from mie_modules import mie_s12
 
 # Workaround to resolve path issues/being unable to see src directory
@@ -60,11 +61,20 @@ def compare_s1s2_methods(
         norm="wiscombe",
     )
 
+    plt.figure(figsize=(6, 4))
+    plt.plot(np.real(miepython_s1), np.imag(miepython_s1), label='MiePython', marker='o')
+    plt.plot(np.real(s1), np.imag(s1), label='Custom Mie Modules', marker='x')
+    plt.xlabel('Real part')
+    plt.title(f'Comparison of S1 for IOR={ior} and Diameter={diameter} µm')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig(f'{project_root}/validation/s1_comparison.png', dpi=600)
+
     np.testing.assert_allclose(s1, miepython_s1, rtol=1e-3)
     np.testing.assert_allclose(s2, miepython_s2, rtol=1e-3)
 
 
 if __name__ == "__main__":
     # Example test case
-    compare_s1s2_methods(ior=1.4 + 0.01j, diameter=1.0)
+    compare_s1s2_methods(ior=1.4 + 0j, diameter=1.0)
     print("S1 and S2 functions match between custom implementation and miepython.")
