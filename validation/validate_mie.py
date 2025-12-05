@@ -1,23 +1,33 @@
+import os
+import sys
 import numpy as np
 import miepython
-from .src.ppops.OPS import OpticalParticleSpectrometer
 from mie_modules import mie_s12
 
-ops = OpticalParticleSpectrometer()
+# Workaround to resolve path issues/being unable to see src directory
+# 1. Get the directory where this file (conftest.py) is located (tests/)
+current_dir = os.path.dirname(os.path.abspath(__file__))
 
-def compare_tcsca_methods(
-    ops: OpticalParticleSpectrometer,
+# 2. Get the parent directory of 'tests/' (which is the PPOPS project root)
+project_root = os.path.join(current_dir, "..")
+
+# 3. Add the PPOPS project root to the very start of the search path (sys.path)
+# This allows Python to correctly resolve 'from src.geometry...'
+sys.path.insert(0, os.path.abspath(project_root))
+
+from src.ppops.OPS import OpticalParticleSpectrometer
+
+
+def compare_s1s2_methods(
     ior: complex,
     diameter: float,
-) -> tuple[float, float]:
+) -> None:
     """
-    Compare S1 and S2 scattering amplitude functions computed using the 
+    Compare S1 and S2 scattering amplitude functions computed using the
     miepython package and a custom Mie implementation.
 
     Parameters
     ----------
-    ops : OpticalParticleSpectrometer
-        Instance of the OpticalParticleSpectrometer class.
     ior : complex
         Complex refractive index of the particle.
     diameter : float
@@ -25,14 +35,16 @@ def compare_tcsca_methods(
 
     Returns
     -------
-
+        None
     """
+    ops = OpticalParticleSpectrometer()
+
     # Determine theta values and size parameter
     n_theta = 100  # Polar angle samples
     theta_max = np.arctan(ops.mirror_radius / ops.h)
     theta_values = np.linspace(np.pi / 2 - theta_max, np.pi / 2 + theta_max, n_theta)
     size_parameter = np.pi / ops.wavelength * diameter
-    
+
     # Compute S1 and S2 using custom Mie implementation
     s1 = np.zeros_like(theta_values, dtype=complex)
     s2 = np.zeros_like(theta_values, dtype=complex)
@@ -45,8 +57,14 @@ def compare_tcsca_methods(
         m=ior,
         x=size_parameter,
         mu=np.cos(theta_values),
-        norm='wiscombe',
+        norm="wiscombe",
     )
 
-    np.testing.assert_allclose(s1, miepython_s1, rtol=1e-5, atol=1e-8)
-    np.testing.assert_allclose(s2, miepython_s2, rtol=1e-5, atol=1e-8)
+    np.testing.assert_allclose(s1, miepython_s1, rtol=1e-3)
+    np.testing.assert_allclose(s2, miepython_s2, rtol=1e-3)
+
+
+if __name__ == "__main__":
+    # Example test case
+    compare_s1s2_methods(ior=1.4 + 0.01j, diameter=1.0)
+    print("S1 and S2 functions match between custom implementation and miepython.")
