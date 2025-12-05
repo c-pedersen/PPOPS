@@ -15,8 +15,7 @@ Functions:
 
 import numpy as np
 
-
-def ptz2r_sc(phi: float, theta: float, y0: float):
+def ptz2r_sc(phi: float, theta: float, h: float, mirror_radius: float, y0: float):
     """Compute POPS mirror geometry and polarization weighting.
 
     This function calculates the intersection of a scattered light ray with
@@ -26,6 +25,8 @@ def ptz2r_sc(phi: float, theta: float, y0: float):
     Args:
         phi (float): Azimuthal angle [radians].
         theta (float): Polar scattering angle [radians].
+        h (float): Distance from scattering region to mirror edge [mm].
+        mirror_radius (float): Radius of the spherical mirror [mm].
         y0 (float): Vertical coordinate of the mirror center [mm].
 
     Returns:
@@ -59,8 +60,8 @@ def ptz2r_sc(phi: float, theta: float, y0: float):
     rm = (-b - np.sqrt(b**2 - 4 * a * c)) / (2 * a)
 
     # Compute maximum azimuthal collection angle
-    r_min = np.sqrt(9.8390**2 + 12.500**2)
-    phi_max = np.arccos(9.8390 / (r_min * np.sin(theta)))
+    r_min = np.sqrt(h**2 + mirror_radius**2)
+    phi_max = np.arccos(np.clip(h / (r_min * np.sin(theta)), -1, 1))
 
     # Cartesian coordinates of intersection point
     x = rp * np.array([
