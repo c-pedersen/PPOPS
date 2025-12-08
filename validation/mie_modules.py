@@ -103,13 +103,13 @@ def mie_pt(u: float, n_max: int) -> np.ndarray:
     p[0] = 1
     t[0] = u
     p[1] = 3 * u
-    t[1] = 9*u*u - 3
-
+    t[1] = 6*u*u - 3 
+    
     # Recurrence relation for higher-order terms
     for n1 in range(2, n_max):
-        p[n1] = ((2*n1 + 1) * u * p[n1 - 1] - (n1 + 1) * p[n1 - 2]) / n1
-        t[n1] = n1 * u * p[n1] - (n1 + 1) * p[n1 - 1]
-
+        n = n1 + 1  # Physics order (n=3, 4, 5, ...)
+        p[n1] = ((2*n - 1) * u * p[n1 - 1] - n * p[n1 - 2]) / (n - 1)
+        t[n1] = n * u * p[n1] - (n + 1) * p[n1 - 1]
     return np.array([p, t])
 
 
@@ -129,6 +129,7 @@ def mie_s12(m: complex, x: float, u: float) -> np.ndarray:
         np.ndarray: Complex scattering amplitudes [S1, S2].
     """
     n_max = round(2 + x + 4 * x ** (1 / 3))
+
     ab = mie_ab(m, x)
     a_n, b_n = ab[0, :], ab[1, :]
 
