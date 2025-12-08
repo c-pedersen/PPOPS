@@ -54,3 +54,7 @@ def test_laser_power_density_calculation():
     result = laser_power_density(power_mw, major_m, minor_m)
     
     assert result == pytest.approx(expected_density)
+
+def test_laser_power_density_zero_power():
+    """Test that zero power results in zero density."""
+    assert laser_power_density(0, 3e-3, 1e-3) == 0.0
