@@ -145,3 +145,15 @@ def test_estimate_signal_noise_vectorized():
     # Noise should not scale exactly linearly due to the fixed noise floor (dark + preamp)
     # but strictly speaking, higher signal = higher noise
     assert noise[1] > noise[0]
+
+def test_estimate_signal_noise_custom_parameters():
+    """
+    Test that passing custom hardware parameters overrides defaults.
+    """
+    csca = 1.0
+    power = 100.0
+    
+    # Defaults
+    sig_def, noise_def = estimate_signal_noise(csca, power)
+    
+    # Custom: Zero Dark Current, Zero Preamp noise, Reduced
