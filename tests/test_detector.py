@@ -91,3 +91,33 @@ def test_laser_power_density_warnings_power():
     # Too low (<= 10 but > 0)
     with pytest.warns(UserWarning, match="Laser power in mW seems unrealistic"):
         laser_power_density(5, 3e-3, 1e-3)
+
+def test_estimate_signal_noise_scalar():
+    """
+    Test signal and noise estimation with scalar inputs.
+    Verifies the physics formulas are implemented correctly.
+    """
+    csca = 1.0 # um^2
+    power_mw = 100.0
+    
+    # Get density to manually calculate expectation
+    # We use default beam dimensions from the function signature in detector.py
+    # (3e-3, 1e-3)
+    density = laser_power_density(power_mw, 3e-3, 1e-3)
+    
+    # Manual Signal Calculation
+    expected_signal = csca * density * H10720_110_ANODE_RADIANT_SENSITIVITY
+    
+    # Manual Noise Calculation
+    signal_noise_sq = 2 * ELEMENTARY_CHARGE * expected_signal
+    dark_noise_sq = 2 * ELEMENTARY_CHARGE * H10720_110_DARK_CURRENT
+    preamp_noise_sq = TIA60_INPUT_CURRENT_NOISE**2
+    
+    expected_total_noise = np.sqrt(
+        (signal_noise_sq + dark_noise_sq + preamp_noise_sq) * BANDWIDTH
+    )
+
+    signal, noise = estimate_signal_noise(csca, power_mw)
+    
+    assert signal == pytest.approx(expected_signal)
+    assert noise == pytest.approx(expected_total_noise)
