@@ -19,6 +19,7 @@ from numpy.typing import ArrayLike
 from miepython.core import S1_S2
 from . import detector
 from .geometry import ptz2r_sc
+from .mirror import mirror_depth
 
 
 class OpticalParticleSpectrometer:
@@ -26,34 +27,42 @@ class OpticalParticleSpectrometer:
 
     def __init__(
         self,
-        wavelength: float = 0.405,
-        h: float = 7.68 + 2.159,
+        laser_wavelength: float = 0.405,
         mirror_radius: float = 12.5,
-        y0: float = 14.2290,
+        mirror_radius_of_curvature: float = 20.0,
+        aerosol_mirror_separation: float = 14.2290,
     ):
         """Initialize the OPS instrument parameters.
 
         Parameters
         ----------
-        wavelength : float
+        laser_wavelength : float
             Wavelength of the incident light in micrometers.
-        h : float
-            Distance from the scattering region to the mirror edge in millimeters.
         mirror_radius : float
-            Radius of the mirror in millimeters.
-        y0 : float
-            Center position of the mirror in millimeters.
+            Radius of the spherical mirror in millimeters.
+        mirror_radius_of_curvature : float
+            Radius of curvature of the spherical mirror in millimeters.
+        aerosol_mirror_separation : float
+            Separation between the aerosol and the center of the mirror
+            in millimeters.
         """
 
-        self.wavelength = wavelength
-        self.h = h
+        self.laser_wavelength = laser_wavelength
         self.mirror_radius = mirror_radius
-        self.y0 = y0
+        self.mirror_radius_of_curvature = mirror_radius_of_curvature
+        self.aerosol_mirror_separation = aerosol_mirror_separation
+        self.y0 = aerosol_mirror_separation
+        # Axial distance from aerosol stream to the top edge of mirror.
+        self.h = aerosol_mirror_separation - mirror_depth(
+            mirror_radius=mirror_radius, radius_of_curvature=mirror_radius_of_curvature
+        )
 
     def truncated_scattering_cross_section(
         self,
         ior: complex,
         diameter: float,
+        n_theta: int = 50,
+        n_phi: int = 40,
     ) -> float:
         """
         Simulates OPS scattering and computed truncated cross-sections.
@@ -68,15 +77,20 @@ class OpticalParticleSpectrometer:
             Complex refractive index of the particle.
         diameter : float
             Diameter of the particle in micrometers.
-
+        n_theta : int
+            Number of polar angle samples for integration.
+        n_phi : int
+            Number of azimuthal angle samples for integration.
 
         Returns
         -------
         float
             Truncated scattering cross-section in square micrometers.
         """
-        n_theta = 50  # Polar angle samples
-        n_phi = 40  # Azimuthal angle samples
+        if not isinstance(n_theta, int) or n_theta <= 0:
+            raise ValueError("n_theta must be a positive integer.")
+        if not isinstance(n_phi, int) or n_phi <= 0:
+            raise ValueError("n_phi must be a positive integer.")
 
         # -------------------------------------------------------------------------
         # Derived Quantities
@@ -85,7 +99,7 @@ class OpticalParticleSpectrometer:
         theta_values = np.linspace(
             np.pi / 2 - theta_max, np.pi / 2 + theta_max, n_theta
         )
-        size_parameter = np.pi / self.wavelength * diameter
+        size_parameter = np.pi / self.laser_wavelength * diameter
         r_min = np.sqrt(self.mirror_radius**2 + self.h**2)
 
         # -------------------------------------------------------------------------
@@ -93,9 +107,7 @@ class OpticalParticleSpectrometer:
         # -------------------------------------------------------------------------
         integrand = np.zeros((n_theta, n_phi))
 
-        mp_s1s2 = S1_S2(
-            m=ior, x=size_parameter, mu=np.cos(theta_values), norm="wiscombe"
-        )
+        mp_s1s2 = S1_S2(m=ior, x=size_parameter, mu=np.cos(theta_values), norm="qsca")
         s1 = mp_s1s2[0]
         s2 = mp_s1s2[1]
         for j, theta in enumerate(theta_values):
@@ -106,7 +118,12 @@ class OpticalParticleSpectrometer:
 
             for k, phi in enumerate(phi_values):
                 _, _, _, _, ws, wp, _ = ptz2r_sc(
-                    phi, theta, self.h, self.mirror_radius, self.y0
+                    phi=phi,
+                    theta=theta,
+                    mirror_radius=self.mirror_radius,
+                    mirror_radius_of_curvature=self.mirror_radius_of_curvature,
+                    y0=self.y0,
+                    h=self.h,
                 )
                 integrand[j, k] = ws * np.abs(s1[j]) ** 2 + wp * np.abs(s2[j]) ** 2
 
@@ -129,7 +146,7 @@ class OpticalParticleSpectrometer:
         # -------------------------------------------------------------------------
         # Compute Cross Sections
         # -------------------------------------------------------------------------
-        trunc_qsca = total_signal / size_parameter**2
+        trunc_qsca = total_signal
         geometric_cross_section = np.pi * (diameter / 2) ** 2
         trunc_csca = trunc_qsca * geometric_cross_section
 
@@ -164,7 +181,9 @@ class OpticalParticleSpectrometer:
         try:
             diameters = np.asarray(diameters, dtype=float)
         except Exception as e:
-            raise TypeError("Diameters must be convertible to a numpy array of floats") from e
+            raise TypeError(
+                "Diameters must be convertible to a numpy array of floats"
+            ) from e
 
         trunc_csca = np.array([])
         for diameter in diameters:
