@@ -71,3 +71,13 @@ def test_laser_power_density_negative_inputs():
         
     with pytest.raises(ValueError, match="Beam major and minor axes must be positive"):
         laser_power_density(100, 3e-3, 0)
+
+def test_laser_power_density_warnings_dimensions():
+    """Test that unrealistic beam dimensions trigger warnings."""
+    # Too large (> 1e-2)
+    with pytest.warns(UserWarning, match="Beam dimensions in meters seem unrealistic"):
+        laser_power_density(100, 2e-2, 1e-3)
+
+    # Too small (< 1e-5)
+    with pytest.warns(UserWarning, match="Beam dimensions in meters seem unrealistic"):
+        laser_power_density(100, 3e-3, 1e-6)
