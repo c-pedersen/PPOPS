@@ -81,3 +81,13 @@ def test_laser_power_density_warnings_dimensions():
     # Too small (< 1e-5)
     with pytest.warns(UserWarning, match="Beam dimensions in meters seem unrealistic"):
         laser_power_density(100, 3e-3, 1e-6)
+
+def test_laser_power_density_warnings_power():
+    """Test that unrealistic laser power triggers warnings."""
+    # Too high (> 1000)
+    with pytest.warns(UserWarning, match="Laser power in mW seems unrealistic"):
+        laser_power_density(1500, 3e-3, 1e-3)
+    
+    # Too low (<= 10 but > 0)
+    with pytest.warns(UserWarning, match="Laser power in mW seems unrealistic"):
+        laser_power_density(5, 3e-3, 1e-3)
