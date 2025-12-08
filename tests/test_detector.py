@@ -121,3 +121,27 @@ def test_estimate_signal_noise_scalar():
     
     assert signal == pytest.approx(expected_signal)
     assert noise == pytest.approx(expected_total_noise)
+
+def test_estimate_signal_noise_vectorized():
+    """
+    Test that the function handles numpy arrays for csca correctly.
+    """
+    csca_array = np.array([1.0, 2.0, 3.0])
+    power_mw = 100.0
+    
+    signal, noise = estimate_signal_noise(csca_array, power_mw)
+    
+    # Check types
+    assert isinstance(signal, np.ndarray)
+    assert isinstance(noise, np.ndarray)
+    
+    # Check shape
+    assert signal.shape == (3,)
+    assert noise.shape == (3,)
+    
+    # Check logic (Signal should scale linearly with CSCA)
+    assert signal[1] == pytest.approx(signal[0] * 2)
+    
+    # Noise should not scale exactly linearly due to the fixed noise floor (dark + preamp)
+    # but strictly speaking, higher signal = higher noise
+    assert noise[1] > noise[0]
