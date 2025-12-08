@@ -58,3 +58,16 @@ def test_laser_power_density_calculation():
 def test_laser_power_density_zero_power():
     """Test that zero power results in zero density."""
     assert laser_power_density(0, 3e-3, 1e-3) == 0.0
+
+def test_laser_power_density_negative_inputs():
+    """Test that negative power or dimensions raise ValueErrors."""
+    # Negative power
+    with pytest.raises(ValueError, match="Laser power cannot be negative"):
+        laser_power_density(-10, 3e-3, 1e-3)
+
+    # Negative dimensions
+    with pytest.raises(ValueError, match="Beam major and minor axes must be positive"):
+        laser_power_density(100, -3e-3, 1e-3)
+        
+    with pytest.raises(ValueError, match="Beam major and minor axes must be positive"):
+        laser_power_density(100, 3e-3, 0)
