@@ -12,6 +12,9 @@ extensions = [
     'sphinx.ext.viewcode',  # Add source code links
     'sphinx.ext.autosummary',  # Generate summary tables
     'sphinx_autodoc_typehints',
+    'autoapi.extension',
+    'sphinx_mdinclude',
+    'nbsphinx',
 ]
 
 autosummary_generate = True
@@ -50,9 +53,11 @@ autosummary_generate = True  # Turn on autosummary
 napoleon_google_docstring = True
 napoleon_numpy_docstring = True
 
+autoapi_dirs = ['../../src/ppops/']
+
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # -- Options for HTML output -------------------------------------------------
-html_theme = 'sphinx_rtd_theme'
-html_static_path = []
+html_theme = 'alabaster'
+html_static_path = ['_static']
