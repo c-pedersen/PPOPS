@@ -34,32 +34,52 @@ def mie_ab(m: complex, x: float) -> np.ndarray:
     z = m * x
     n_max = round(2 + x + 4 * x ** (1 / 3))
     n_mx = round(max(n_max, abs(z)) + 16)
+
     n = np.arange(1, n_max + 1)
-    nu = n + 0.5
 
-    # Riccati–Bessel functions (ψ_n and χ_n)
-    s_x = np.sqrt(0.5 * np.pi * x)
-    psi_x = s_x * spherical_jn(n, x)
-    psi_1x = np.concatenate(([np.sin(x)], psi_x[:-1]))
-    chi_x = -s_x * spherical_yn(n, x)
-    chi_1x = np.concatenate(([np.cos(x)], chi_x[:-1]))
+    # ------------------------------------------------------------
+    # Correct Riccati–Bessel functions:
+    #   psi_n(x) = x * j_n(x)
+    #   chi_n(x) = -x * y_n(x)
+    # ------------------------------------------------------------
+    psi_x = x * spherical_jn(n, x)
+    chi_x = -x * spherical_yn(n, x)
 
-    # Outgoing spherical Hankel functions (ξ_n)
-    xi_x = psi_x - 1j * chi_x
-    xi_1x = psi_1x - 1j * chi_1x
+    # shifted versions ψ_{n-1} and χ_{n-1}
+    psi_1x = np.empty_like(psi_x)
+    chi_1x = np.empty_like(chi_x)
 
+    psi_1x[0] = np.sin(x)   # ψ_0(x)
+    chi_1x[0] = np.cos(x)   # χ_0(x)
+
+    psi_1x[1:] = x * spherical_jn(n[:-1], x)
+    chi_1x[1:] = -x * spherical_yn(n[:-1], x)
+
+    # ------------------------------------------------------------
+    # Outgoing spherical Hankel functions
+    # ------------------------------------------------------------
+    xi_x = psi_x + 1j * chi_x
+    xi_1x = psi_1x + 1j * chi_1x
+
+    # ------------------------------------------------------------
     # Logarithmic derivative D_n(z) via backward recurrence
+    # ------------------------------------------------------------
     dn_x = np.zeros(n_mx + 1, dtype=complex)
+
     for j in range(n_mx, 1, -1):
-        dn_x[j - 1] = j / z - 1 / (dn_x[j] + j / z)
+        dn_x[j - 1] = j / z - 1.0 / (dn_x[j] + j / z)
 
     dn = dn_x[1:n_max + 1]
+
+    # ------------------------------------------------------------
+    # Mie coefficients
+    # ------------------------------------------------------------
     da = dn / m + n / x
     db = m * dn + n / x
 
-    # Mie coefficients a_n and b_n
     a_n = (da * psi_x - psi_1x) / (da * xi_x - xi_1x)
     b_n = (db * psi_x - psi_1x) / (db * xi_x - xi_1x)
+
     return np.array([a_n, b_n])
 
 
@@ -83,13 +103,13 @@ def mie_pt(u: float, n_max: int) -> np.ndarray:
     p[0] = 1
     t[0] = u
     p[1] = 3 * u
-    t[1] = 3 * np.cos(2 * np.arccos(u))
-
+    t[1] = 6*u*u - 3 
+    
     # Recurrence relation for higher-order terms
     for n1 in range(2, n_max):
-        p[n1] = ((2 * n1 + 1) / n1) * p[n1 - 1] * u - ((n1 + 1) / n1) * p[n1 - 2]
-        t[n1] = (n1 + 1) * u * p[n1] - (n1 + 2) * p[n1 - 1]
-
+        n = n1 + 1  # Physics order (n=3, 4, 5, ...)
+        p[n1] = ((2*n - 1) * u * p[n1 - 1] - n * p[n1 - 2]) / (n - 1)
+        t[n1] = n * u * p[n1] - (n + 1) * p[n1 - 1]
     return np.array([p, t])
 
 
@@ -109,6 +129,7 @@ def mie_s12(m: complex, x: float, u: float) -> np.ndarray:
         np.ndarray: Complex scattering amplitudes [S1, S2].
     """
     n_max = round(2 + x + 4 * x ** (1 / 3))
+
     ab = mie_ab(m, x)
     a_n, b_n = ab[0, :], ab[1, :]
 
