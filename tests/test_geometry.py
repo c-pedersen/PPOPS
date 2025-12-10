@@ -36,12 +36,14 @@ def test_basic_run_and_output_structure():
     y0 = 0.0
     h = 7.68 + 2.159
     mirror_radius = 12.5
+    mirror_radius_of_curvature = 20.0
 
     result = ptz2r_sc(
         phi=phi,
         theta=theta,
         h=h,
         mirror_radius=mirror_radius,
+        mirror_radius_of_curvature=mirror_radius_of_curvature,
         y0=y0,
     )
 
@@ -67,6 +69,7 @@ def test_polarization_conservation():
     """
     h = 7.68 + 2.159
     mirror_radius = 12.5
+    mirror_radius_of_curvature = 20.0
 
     # Test a few different realistic geometries
     test_cases = [
@@ -81,6 +84,7 @@ def test_polarization_conservation():
             theta=theta,
             h=h,
             mirror_radius=mirror_radius,
+            mirror_radius_of_curvature=mirror_radius_of_curvature,
             y0=y0,
         )
 
@@ -108,11 +112,13 @@ def test_degenerate_forward_scattering():
     y0 = 0.0
     h = 7.68 + 2.159
     mirror_radius = 12.5
+    mirror_radius_of_curvature = 20.0
 
     _, _, _, _, ws, wp, _ = ptz2r_sc(
         phi=phi,
         theta=theta,
         h=h,
+        mirror_radius_of_curvature=mirror_radius_of_curvature,
         mirror_radius=mirror_radius,
         y0=y0,
     )
@@ -153,12 +159,14 @@ def test_pure_s_polarization():
     y0 = 0.0
     h = 7.68 + 2.159
     mirror_radius = 12.5
+    mirror_radius_of_curvature = 20.0
 
     _, _, _, _, ws, wp, _ = ptz2r_sc(
         phi=phi,
         theta=theta,
         h=h,
         mirror_radius=mirror_radius,
+        mirror_radius_of_curvature=mirror_radius_of_curvature,
         y0=y0,
     )
 

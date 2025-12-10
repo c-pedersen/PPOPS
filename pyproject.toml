@@ -50,6 +50,9 @@ dev = [
     "build>=1.0.0",
     "twine>=6.0.0",
 ]
+validation = [
+    "matplotlib>=3.0.0",
+]
 
 [project.urls]
 Homepage = "https://github.com/c-pedersen/PPOPS"
