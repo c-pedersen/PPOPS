@@ -37,15 +37,12 @@ def mie_ab(m: complex, x: float) -> np.ndarray:
 
     n = np.arange(1, n_max + 1)
 
-    # ------------------------------------------------------------
-    # Correct Riccati–Bessel functions:
+    #  Riccati–Bessel functions:
     #   psi_n(x) = x * j_n(x)
     #   chi_n(x) = -x * y_n(x)
-    # ------------------------------------------------------------
     psi_x = x * spherical_jn(n, x)
     chi_x = -x * spherical_yn(n, x)
 
-    # shifted versions ψ_{n-1} and χ_{n-1}
     psi_1x = np.empty_like(psi_x)
     chi_1x = np.empty_like(chi_x)
 
@@ -55,15 +52,13 @@ def mie_ab(m: complex, x: float) -> np.ndarray:
     psi_1x[1:] = x * spherical_jn(n[:-1], x)
     chi_1x[1:] = -x * spherical_yn(n[:-1], x)
 
-    # ------------------------------------------------------------
+
     # Outgoing spherical Hankel functions
-    # ------------------------------------------------------------
     xi_x = psi_x + 1j * chi_x
     xi_1x = psi_1x + 1j * chi_1x
 
-    # ------------------------------------------------------------
+
     # Logarithmic derivative D_n(z) via backward recurrence
-    # ------------------------------------------------------------
     dn_x = np.zeros(n_mx + 1, dtype=complex)
 
     for j in range(n_mx, 1, -1):
@@ -71,9 +66,8 @@ def mie_ab(m: complex, x: float) -> np.ndarray:
 
     dn = dn_x[1:n_max + 1]
 
-    # ------------------------------------------------------------
+
     # Mie coefficients
-    # ------------------------------------------------------------
     da = dn / m + n / x
     db = m * dn + n / x
 
@@ -94,7 +88,7 @@ def mie_pt(u: float, n_max: int) -> np.ndarray:
         n_max (int): Maximum multipole order.
 
     Returns:
-        np.ndarray: A 2×N array with π_n(u) and τ_n(u) values.
+        np.ndarray: A 2×N array with π_n(u) and τ_n(u) values. hiiiii
     """
     p = np.zeros(n_max)
     t = np.zeros(n_max)
