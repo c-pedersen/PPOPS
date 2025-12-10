@@ -3,8 +3,8 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "PPOPS"
-version = "0.0.0"
+name = "ppops"
+version = "0.0.0.dev"
 authors = [
   { name = "Corey Pedersen", email = "coreyped@gmail.com" },
 ]
@@ -29,6 +29,8 @@ keywords = ["OPS", "OPC", "POPS", "Optical Particle Spectrometer"]
 dependencies = [
     "numpy>=1.18.0",
     "pandas>=1.0.0", 
+    "scipy>=1.15.0",
+    "miepython>=3.0.1",
 ]
 
 [project.optional-dependencies]
@@ -45,6 +47,9 @@ dev = [
     "build>=1.0.0",
     "twine>=6.0.0",
 ]
+validation = [
+    "matplotlib>=3.0.0",
+]
 
 [project.urls]
 Homepage = "https://github.com/c-pedersen/PPOPS"
@@ -52,8 +57,8 @@ Repository = "https://github.com/c-pedersen/PPOPS"
 Documentation = "https://github.com/c-pedersen/PPOPS#readme"
 "Bug Tracker" = "https://github.com/c-pedersen/PPOPS/issues"
 
-[tool.setuptools]
-packages = ["src"]
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.pyright]
 include = ["src"]
