@@ -52,11 +52,9 @@ def mie_ab(m: complex, x: float) -> np.ndarray:
     psi_1x[1:] = x * spherical_jn(n[:-1], x)
     chi_1x[1:] = -x * spherical_yn(n[:-1], x)
 
-
     # Outgoing spherical Hankel functions
     xi_x = psi_x + 1j * chi_x
     xi_1x = psi_1x + 1j * chi_1x
-
 
     # Logarithmic derivative D_n(z) via backward recurrence
     dn_x = np.zeros(n_mx + 1, dtype=complex)
@@ -65,7 +63,6 @@ def mie_ab(m: complex, x: float) -> np.ndarray:
         dn_x[j - 1] = j / z - 1.0 / (dn_x[j] + j / z)
 
     dn = dn_x[1 : n_max + 1]
-
 
     # Mie coefficients
     da = dn / m + n / x
@@ -88,7 +85,7 @@ def mie_pt(u: float, n_max: int) -> np.ndarray:
         n_max (int): Maximum multipole order.
 
     Returns:
-        np.ndarray: A 2×N array with π_n(u) and τ_n(u) values. hiiiii
+        np.ndarray: A 2xN array with π_n(u) and τ_n(u) values. hiiiii
     """
     p = np.zeros(n_max)
     t = np.zeros(n_max)
