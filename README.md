@@ -2,6 +2,7 @@
 Performance Prediction for Optical Particle Spectrometer
 
 [![codecov](https://codecov.io/gh/c-pedersen/ppops/branch/main/graph/badge.svg?ts=20251106)](https://codecov.io/gh/c-pedersen/ppops)
+[![CI](https://github.com/c-pedersen/PPOPS/actions/workflows/ci.yml/badge.svg)](https://github.com/c-pedersen/PPOPS/actions/workflows/ci.yml)
 # POPS Scattering Simulation and Calibration
 
 This repository implements a Mie scattering model and POPS (Portable Optical Particle Spectrometer) geometry simulation to calculate the truncated scattering cross section — the portion of scattered light collected by the POPS mirror.
