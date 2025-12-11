@@ -17,7 +17,7 @@ project_root = os.path.join(current_dir, "..")
 sys.path.insert(0, os.path.abspath(project_root))
 
 # The error label below (E402) suppresses the ruff error that the module import is not at the top of the file
-from src.ppops.OPS import OpticalParticleSpectrometer # noqa: E402
+from src.ppops.OPS import OpticalParticleSpectrometer  # noqa: E402
 
 
 def compare_s1s2_methods(
@@ -63,13 +63,15 @@ def compare_s1s2_methods(
     )
 
     plt.figure(figsize=(6, 4))
-    plt.plot(np.real(miepython_s1), np.imag(miepython_s1), label='MiePython', marker='o')
-    plt.plot(np.real(s1), np.imag(s1), label='Custom Mie Modules', marker='x')
-    plt.xlabel('Real part')
-    plt.title(f'Comparison of S1 for IOR={ior} and Diameter={diameter} µm')
+    plt.plot(
+        np.real(miepython_s1), np.imag(miepython_s1), label="MiePython", marker="o"
+    )
+    plt.plot(np.real(s1), np.imag(s1), label="Custom Mie Modules", marker="x")
+    plt.xlabel("Real part")
+    plt.title(f"Comparison of S1 for IOR={ior} and Diameter={diameter} µm")
     plt.legend()
     plt.grid(True)
-    plt.savefig(f'{project_root}/validation/s1_comparison.png', dpi=600)
+    plt.savefig(f"{project_root}/validation/s1_comparison.png", dpi=600)
 
     np.testing.assert_allclose(s1, miepython_s1, rtol=1e-3)
     np.testing.assert_allclose(s2, miepython_s2, rtol=1e-3)
