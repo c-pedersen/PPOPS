@@ -54,6 +54,9 @@ dev = [
 validation = [
     "matplotlib>=3.0.0",
 ]
+profiling = [
+    "snakeviz",
+]
 
 [project.urls]
 Homepage = "https://github.com/c-pedersen/PPOPS"
@@ -80,3 +83,8 @@ markers = [
 ]
 testpaths = ["tests"]
 pythonpath = ["src"]
+
+# Tell mypy to ignore type checking for miepython, since it is an external library
+[[tool.mypy.overrides]]
+module = "miepython.core"
+ignore_missing_imports = true

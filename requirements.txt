@@ -8,3 +8,6 @@ miepython>=3.0.1
 
 # Linting
 ruff
+
+# Profiling
+snakeviz
