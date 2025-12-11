@@ -24,15 +24,14 @@ def ptz2r_sc(
     y0: float,
     h: float,
 ):
-    """
-    Compute POPS mirror geometry and polarization weighting.
+    """Compute POPS mirror geometry and polarization weighting.
 
     This function calculates the intersection of a scattered light ray with
     the spherical POPS mirror and determines polarization weighting factors
     (s- and p-polarization) based on instrument geometry.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     phi : float
         Azimuthal scattering angle [radians].
     theta : float
@@ -48,8 +47,8 @@ def ptz2r_sc(
         Height of the particle-laser interaction region above
         the mirror vertex [mm].
 
-    Returns:
-    --------
+    Returns
+    -------
     rp : float
         Positive intersection distance from the scattering
         region to the mirror surface [mm].
