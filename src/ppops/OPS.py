@@ -91,45 +91,49 @@ class OpticalParticleSpectrometer:
             raise ValueError("n_theta must be a positive integer.")
         if not isinstance(n_phi, int) or n_phi <= 0:
             raise ValueError("n_phi must be a positive integer.")
-
-        # -------------------------------------------------------------------------
-        # Derived Quantities
-        # -------------------------------------------------------------------------
+        
+        # Derived quantities
         theta_max = np.arctan(self.mirror_radius / self.h)
         theta_values = np.linspace(
             np.pi / 2 - theta_max, np.pi / 2 + theta_max, n_theta
         )
         size_parameter = np.pi / self.laser_wavelength * diameter
         r_min = np.sqrt(self.mirror_radius**2 + self.h**2)
-
-        # -------------------------------------------------------------------------
-        # Integration Setup
-        # -------------------------------------------------------------------------
-        integrand = np.zeros((n_theta, n_phi))
-
+        
+        # Compute S1, S2 for all theta values at once
         mp_s1s2 = S1_S2(m=ior, x=size_parameter, mu=np.cos(theta_values), norm="qsca")
         s1 = mp_s1s2[0]
         s2 = mp_s1s2[1]
+        s1_sq = np.abs(s1) ** 2
+        s2_sq = np.abs(s2) ** 2
+        
+        # Integration setup
+        integrand = np.zeros((n_theta, n_phi))
+        
+        # For each theta, vectorize over phi
         for j, theta in enumerate(theta_values):
             phi_max = np.arccos(
                 np.clip(self.h / (r_min * np.sqrt(1 - np.cos(theta) ** 2)), -1, 1)
             )
             phi_values = np.linspace(-phi_max, phi_max, n_phi)
-
-            for k, phi in enumerate(phi_values):
-                _, _, _, _, ws, wp, _ = ptz2r_sc(
-                    phi=phi,
-                    theta=theta,
-                    mirror_radius=self.mirror_radius,
-                    mirror_radius_of_curvature=self.mirror_radius_of_curvature,
-                    y0=self.y0,
-                    h=self.h,
-                )
-                integrand[j, k] = ws * np.abs(s1[j]) ** 2 + wp * np.abs(s2[j]) ** 2
-
-        # -------------------------------------------------------------------------
-        # Double Integration
-        # -------------------------------------------------------------------------
+            
+            # Create theta array (constant for this phi sweep)
+            theta_array = np.full_like(phi_values, theta)
+            
+            # Call ptz2r_sc once per theta
+            _, _, _, _, ws, wp, _ = ptz2r_sc(
+                phi=phi_values,
+                theta=theta_array,
+                mirror_radius=self.mirror_radius,
+                mirror_radius_of_curvature=self.mirror_radius_of_curvature,
+                y0=self.y0,
+                h=self.h,
+            )
+            
+            # Compute integrand for this entire phi sweep
+            integrand[j, :] = ws * s1_sq[j] + wp * s2_sq[j]
+        
+        # Double integration
         total_signal = 0.0
         for j, theta in enumerate(theta_values):
             phi_max = np.arccos(
@@ -139,17 +143,15 @@ class OpticalParticleSpectrometer:
             d_phi = phi_values[1] - phi_values[0]
             sum_phi = np.sum(integrand[j, :]) * d_phi
             total_signal += sum_phi * np.sin(theta)
-
+        
         d_theta = theta_values[1] - theta_values[0]
         total_signal *= d_theta
-
-        # -------------------------------------------------------------------------
-        # Compute Cross Sections
-        # -------------------------------------------------------------------------
+        
+        # Compute cross sections
         trunc_qsca = total_signal
         geometric_cross_section = np.pi * (diameter / 2) ** 2
         trunc_csca = trunc_qsca * geometric_cross_section
-
+        
         return trunc_csca
 
     def estimate_signal_noise(
