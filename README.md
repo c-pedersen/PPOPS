@@ -2,6 +2,8 @@
 Performance Prediction for Optical Particle Spectrometer
 
 [![codecov](https://codecov.io/gh/c-pedersen/ppops/branch/main/graph/badge.svg?ts=20251106)](https://codecov.io/gh/c-pedersen/ppops)
+[![CI](https://github.com/c-pedersen/PPOPS/actions/workflows/ci.yml/badge.svg)](https://github.com/c-pedersen/PPOPS/actions/workflows/ci.yml)
+# POPS Scattering Simulation and Calibration
 
 This repository implements a Mie scattering model and Optical Particle
 Spectrometer (OPS) geometry simulation to calculate the truncated
