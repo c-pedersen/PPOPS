@@ -77,3 +77,8 @@ max-line-length = 88
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+
+# Tell mypy to ignore type checking for miepython, since it is an external library
+[[tool.mypy.overrides]]
+module = "miepython.core"
+ignore_missing_imports = true
