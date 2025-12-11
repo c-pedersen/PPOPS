@@ -18,6 +18,7 @@ sys.path.insert(0, os.path.abspath(project_root))
 from src import ppops  # noqa: E402
 
 
+@pytest.mark.slow
 def test_Qsca_truncation():
     """
     Test that the truncated scattering cross section calculation

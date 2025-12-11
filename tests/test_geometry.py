@@ -37,6 +37,7 @@ def test_basic_run_and_output_structure():
     h = 7.68 + 2.159
     mirror_radius = 12.5
     mirror_radius_of_curvature = 20.0
+    laser_polarization = "horizontal"
 
     result = ptz2r_sc(
         phi=phi,
@@ -45,6 +46,7 @@ def test_basic_run_and_output_structure():
         mirror_radius=mirror_radius,
         mirror_radius_of_curvature=mirror_radius_of_curvature,
         y0=y0,
+        laser_polarization=laser_polarization,
     )
 
     # 1. Check if the correct number of results (7) is returned
@@ -70,6 +72,7 @@ def test_polarization_conservation():
     h = 7.68 + 2.159
     mirror_radius = 12.5
     mirror_radius_of_curvature = 20.0
+    laser_polarization = "horizontal"
 
     # Test a few different realistic geometries
     test_cases = [
@@ -86,6 +89,7 @@ def test_polarization_conservation():
             mirror_radius=mirror_radius,
             mirror_radius_of_curvature=mirror_radius_of_curvature,
             y0=y0,
+            laser_polarization=laser_polarization,
         )
 
         # Check that ws + wp equals 1.0 within tolerance
@@ -113,6 +117,7 @@ def test_degenerate_forward_scattering():
     h = 7.68 + 2.159
     mirror_radius = 12.5
     mirror_radius_of_curvature = 20.0
+    laser_polarization = "horizontal"
 
     _, _, _, _, ws, wp, _ = ptz2r_sc(
         phi=phi,
@@ -121,6 +126,7 @@ def test_degenerate_forward_scattering():
         mirror_radius_of_curvature=mirror_radius_of_curvature,
         mirror_radius=mirror_radius,
         y0=y0,
+        laser_polarization=laser_polarization,
     )
 
     # In the degenerate case (n2 < 1e-12), the function should return:
@@ -160,6 +166,7 @@ def test_pure_s_polarization():
     h = 7.68 + 2.159
     mirror_radius = 12.5
     mirror_radius_of_curvature = 20.0
+    laser_polarization = "horizontal"
 
     _, _, _, _, ws, wp, _ = ptz2r_sc(
         phi=phi,
@@ -168,6 +175,7 @@ def test_pure_s_polarization():
         mirror_radius=mirror_radius,
         mirror_radius_of_curvature=mirror_radius_of_curvature,
         y0=y0,
+        laser_polarization=laser_polarization,
     )
 
     np.testing.assert_almost_equal(

@@ -23,6 +23,7 @@ def ptz2r_sc(
     mirror_radius_of_curvature: float,
     y0: float,
     h: float,
+    laser_polarization: str,
 ):
     """Compute POPS mirror geometry and polarization weighting.
 
@@ -46,6 +47,10 @@ def ptz2r_sc(
     h : float
         Height of the particle-laser interaction region above
         the mirror vertex [mm].
+    laser_polarization : str
+        Polarization state of the incident laser light. Options are
+        'unpolarized', 'horizontal', or 'vertical'. Default is
+        'horizontal'.
 
     Returns
     -------
@@ -110,7 +115,17 @@ def ptz2r_sc(
     # -------------------------------------------------------------------------
     # Polarization weighting computation
     # -------------------------------------------------------------------------
-    e0 = np.array([1, 0, 0])  # Laser electric field (polarization direction)
+    if laser_polarization == "unpolarized":
+        e0 = np.array([1 / np.sqrt(2), 1 / np.sqrt(2), 0])  # Unpolarized light
+    elif laser_polarization == "horizontal":
+        e0 = np.array([1, 0, 0])  # Horizontal polarization (x-direction)
+    elif laser_polarization == "vertical":
+        e0 = np.array([0, 1, 0])  # Vertical polarization (y-direction)
+    else:
+        raise ValueError(
+            "Invalid polarization state. Only 'unpolarized', 'horizontal', "
+            "or 'vertical' allowed."
+        )
     k_i = np.array([0, 0, 1])  # Incident laser wave vector (+z direction)
     k_s = x_norm  # Scattered wave vector
 

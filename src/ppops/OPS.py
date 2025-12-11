@@ -28,6 +28,8 @@ class OpticalParticleSpectrometer:
     def __init__(
         self,
         laser_wavelength: float = 0.405,
+        laser_power: float = 70,
+        laser_polarization: str = "horizontal",
         mirror_radius: float = 12.5,
         mirror_radius_of_curvature: float = 20.0,
         aerosol_mirror_separation: float = 14.2290,
@@ -38,6 +40,12 @@ class OpticalParticleSpectrometer:
         ----------
         laser_wavelength : float
             Wavelength of the incident light in micrometers.
+        laser_power : float
+            Laser power in milliwatts.
+        laser_polarization : str
+            Polarization state of the incident laser light. Options are
+            'unpolarized', 'horizontal', or 'vertical'. Default is 
+            'horizontal'.
         mirror_radius : float
             Radius of the spherical mirror in millimeters.
         mirror_radius_of_curvature : float
@@ -48,6 +56,8 @@ class OpticalParticleSpectrometer:
         """
 
         self.laser_wavelength = laser_wavelength
+        self.laser_power = laser_power
+        self.laser_polarization = laser_polarization
         self.mirror_radius = mirror_radius
         self.mirror_radius_of_curvature = mirror_radius_of_curvature
         self.aerosol_mirror_separation = aerosol_mirror_separation
@@ -124,6 +134,7 @@ class OpticalParticleSpectrometer:
                     mirror_radius_of_curvature=self.mirror_radius_of_curvature,
                     y0=self.y0,
                     h=self.h,
+                    laser_polarization=self.laser_polarization,
                 )
                 integrand[j, k] = ws * np.abs(s1[j]) ** 2 + wp * np.abs(s2[j]) ** 2
 
@@ -156,7 +167,6 @@ class OpticalParticleSpectrometer:
         self,
         ior: complex,
         diameters: float | ArrayLike,
-        laser_power: float = 70,
     ) -> tuple[float | np.ndarray, float | np.ndarray]:
         """
         Estimate the signal amplitude from the scattered light incident
@@ -168,8 +178,6 @@ class OpticalParticleSpectrometer:
             Complex refractive index of the particle.
         diameters : float | np.ndarray
             Diameter of the particle in micrometers.
-        laser_power : float
-            Laser power in mW. Default is 70 mW.
 
         Returns
         -------
@@ -192,6 +200,6 @@ class OpticalParticleSpectrometer:
                 self.truncated_scattering_cross_section(ior, diameter),
             )
 
-        signal, noise = detector.estimate_signal_noise(trunc_csca, laser_power)
+        signal, noise = detector.estimate_signal_noise(trunc_csca, self.laser_power)
 
         return signal, noise

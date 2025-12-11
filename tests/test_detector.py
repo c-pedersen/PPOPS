@@ -62,7 +62,8 @@ def test_laser_power_density_calculation():
 
 def test_laser_power_density_zero_power():
     """Test that zero power results in zero density."""
-    assert laser_power_density(0, 3e-3, 1e-3) == 0.0
+    with pytest.warns(UserWarning, match="Laser power in mW seems unrealistic"):
+        assert laser_power_density(0, 3e-3, 1e-3) == 0.0
 
 
 def test_laser_power_density_negative_inputs():
