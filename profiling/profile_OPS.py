@@ -15,8 +15,9 @@ project_root = os.path.join(current_dir, "..")
 
 # 3. Add the PPOPS project root to the very start of the search path (sys.path)
 # This allows Python to correctly resolve 'from src.geometry...'
-project_dir = os.path.abspath(project_root)
-sys.path.insert(0, project_dir)
+project_path = os.path.abspath(project_root)
+src_path = os.path.join(project_path, "src")
+sys.path.insert(0, project_path)
 
 print(f"Added to path: {project_root}")
 print("\n--- Current Python Search Paths (sys.path) ---")
@@ -25,7 +26,7 @@ for p in sys.path:
 print("------------------------------------------")
 
 # The error label at the start of the file (E402) suppresses the ruff error that the module import is not at the top of the file
-from src import ppops
+import ppops
 
 
 def run_profiling():
@@ -58,10 +59,10 @@ if __name__ == "__main__":
     print(f"Starting profiling for {test_name} with {len(DIAMETERS)} diameters...")
 
     # Run the function under cProfile
-    cProfile.run("run_profiling()", project_dir+"/profiling/"+profile_output_file)
+    cProfile.run("run_profiling()", project_path+"/profiling/"+profile_output_file)
 
     # Print a text summary (pstats) for quick analysis
-    p = pstats.Stats(project_dir+"/profiling/"+profile_output_file)
+    p = pstats.Stats(project_path+"/profiling/"+profile_output_file)
     print("\n--- Top 10 Functions by Cumulative Time (cumtime) ---")
 
     # Sort by 'cumulative' time (time spent in function and all sub-functions)
