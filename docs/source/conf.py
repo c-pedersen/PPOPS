@@ -7,14 +7,14 @@ import re
 sys.path.insert(0, os.path.abspath("../.."))
 
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.napoleon',  # For Google/NumPy style docstrings
-    'sphinx.ext.viewcode',  # Add source code links
-    'sphinx.ext.autosummary',  # Generate summary tables
-    'sphinx_autodoc_typehints',
-    'autoapi.extension',
-    'sphinx_mdinclude',
-    'nbsphinx',
+    "sphinx.ext.autodoc",
+    "sphinx.ext.napoleon",  # For Google/NumPy style docstrings
+    "sphinx.ext.viewcode",  # Add source code links
+    "sphinx.ext.autosummary",  # Generate summary tables
+    "sphinx_autodoc_typehints",
+    "autoapi.extension",
+    "sphinx_mdinclude",
+    "nbsphinx",
 ]
 
 autosummary_generate = True
@@ -42,22 +42,22 @@ version = release.rsplit(".", 1)[0]  # Short version (e.g., "1.2")
 
 # Autodoc settings
 autodoc_default_options = {
-    'members': True,
-    'member-order': 'bysource',
-    'special-members': '__init__',
-    'undoc-members': True,
-    'exclude-members': '__weakref__'
+    "members": True,
+    "member-order": "bysource",
+    "special-members": "__init__",
+    "undoc-members": True,
+    "exclude-members": "__weakref__",
 }
 
 autosummary_generate = True  # Turn on autosummary
 napoleon_google_docstring = True
 napoleon_numpy_docstring = True
 
-autoapi_dirs = ['../../src/ppops/']
+autoapi_dirs = ["../../src/ppops/"]
 
-templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+templates_path = ["_templates"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 # -- Options for HTML output -------------------------------------------------
-html_theme = 'alabaster'
-html_static_path = ['_static']
+html_theme = "alabaster"
+html_static_path = ["_static"]

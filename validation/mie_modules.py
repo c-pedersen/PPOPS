@@ -46,8 +46,8 @@ def mie_ab(m: complex, x: float) -> np.ndarray:
     psi_1x = np.empty_like(psi_x)
     chi_1x = np.empty_like(chi_x)
 
-    psi_1x[0] = np.sin(x)   # ψ_0(x)
-    chi_1x[0] = np.cos(x)   # χ_0(x)
+    psi_1x[0] = np.sin(x)  # ψ_0(x)
+    chi_1x[0] = np.cos(x)  # χ_0(x)
 
     psi_1x[1:] = x * spherical_jn(n[:-1], x)
     chi_1x[1:] = -x * spherical_yn(n[:-1], x)
@@ -64,7 +64,7 @@ def mie_ab(m: complex, x: float) -> np.ndarray:
     for j in range(n_mx, 1, -1):
         dn_x[j - 1] = j / z - 1.0 / (dn_x[j] + j / z)
 
-    dn = dn_x[1:n_max + 1]
+    dn = dn_x[1 : n_max + 1]
 
 
     # Mie coefficients
@@ -97,12 +97,12 @@ def mie_pt(u: float, n_max: int) -> np.ndarray:
     p[0] = 1
     t[0] = u
     p[1] = 3 * u
-    t[1] = 6*u*u - 3 
-    
+    t[1] = 6 * u * u - 3
+
     # Recurrence relation for higher-order terms
     for n1 in range(2, n_max):
         n = n1 + 1  # Physics order (n=3, 4, 5, ...)
-        p[n1] = ((2*n - 1) * u * p[n1 - 1] - n * p[n1 - 2]) / (n - 1)
+        p[n1] = ((2 * n - 1) * u * p[n1 - 1] - n * p[n1 - 2]) / (n - 1)
         t[n1] = n * u * p[n1] - (n + 1) * p[n1 - 1]
     return np.array([p, t])
 
@@ -138,4 +138,3 @@ def mie_s12(m: complex, x: float, u: float) -> np.ndarray:
     s1 = np.dot(a_n, pi_n) + np.dot(b_n, tau_n)
     s2 = np.dot(a_n, tau_n) + np.dot(b_n, pi_n)
     return np.array([s1, s2])
-

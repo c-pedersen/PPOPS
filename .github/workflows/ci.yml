@@ -22,3 +22,24 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13" 
+
+      - name: Install dependencies (Ruff and any other linting tools)
+        run: pip install ruff
+
+      - name: Run Ruff Linting and Formatting Check
+        run: |
+          # The following command checks for linting errors and formatting issues.
+          # If any issues are found, the job will fail.
+          ruff check .
+          ruff format --check .
