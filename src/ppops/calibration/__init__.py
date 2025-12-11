@@ -1,5 +1,5 @@
 """
-This submodule contains functions for calibrating POPS data, including 
+This submodule contains functions for calibrating POPS data, including
 loading peak files.
 """
 
