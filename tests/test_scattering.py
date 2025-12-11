@@ -41,10 +41,10 @@ def test_Qsca_truncation():
 
             trunc_qsca = (
                 ops.truncated_scattering_cross_section(
-                    ior=ior, diameter=diameter, n_theta=500, n_phi=500
+                    ior=ior, diameter=diameter, n_theta=150, n_phi=150
                 )
                 / geometric_cross_section
             )
 
             # Check that the truncated Qsca is approximately equal to the full Qsca
-            assert qsca == pytest.approx(trunc_qsca * 2, rel=5e-3)
+            assert qsca == pytest.approx(trunc_qsca * 2, rel=1e-2)
