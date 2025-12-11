@@ -50,6 +50,9 @@ docs = [
 dev = [
     "build>=1.0.0",
     "twine>=6.0.0",
+    "ruff",
+    "mypy",
+    "ipykernel>=6.0.0",
 ]
 validation = [
     "matplotlib>=3.0.0",

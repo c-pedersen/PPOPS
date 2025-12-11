@@ -45,7 +45,7 @@ class OpticalParticleSpectrometer:
             Laser power in milliwatts.
         laser_polarization : str
             Polarization state of the incident laser light. Options are
-            'unpolarized', 'horizontal', or 'vertical'. Default is 
+            'unpolarized', 'horizontal', or 'vertical'. Default is
             'horizontal'.
         mirror_radius : float
             Radius of the spherical mirror in millimeters.
