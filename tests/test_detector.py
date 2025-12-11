@@ -29,8 +29,8 @@ from src.ppops.detector import (
     H10720_110_ANODE_RADIANT_SENSITIVITY,
     H10720_110_DARK_CURRENT,
     BANDWIDTH,
-    TIA60_INPUT_CURRENT_NOISE
-) # noqa: E402
+    TIA60_INPUT_CURRENT_NOISE, # noqa: E402
+)
 
 # TESTS
 
