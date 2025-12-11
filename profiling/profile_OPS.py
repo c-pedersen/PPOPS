@@ -3,6 +3,8 @@
 import cProfile
 import pstats
 import numpy as np
+import sys
+import os
 
 # Workaround to resolve path issues/being unable to see src directory
 # 1. Get the directory where this file (conftest.py) is located (tests/)
@@ -24,23 +26,23 @@ print("------------------------------------------")
 # The error label at the start of the file (E402) suppresses the ruff error that the module import is not at the top of the file
 from src import ppops
 
-# Output file for profiling results
-profile_output_file = "OPS_profile_data.prof"
-
-# Inputs for OPS
-DIAMETERS = np.arange(0.1, 2, 0.01) # ~190 diameters
-IOR = 1.6 # Simple real refractive index
-
 def run_profiling():
     """Instantiates the class and runs the target function."""
     
     # 1. Instantiate the class
-    ops = OPS.OpticalParticleSpectrometer()
+    ops = ppops.OpticalParticleSpectrometer()
     
     # 2. Call the function to be profiled
     ops.estimate_signal_noise(diameters=DIAMETERS, ior=IOR)
 
 if __name__ == "__main__":
+    # Output file for profiling results
+    profile_output_file = "OPS_profile_data.prof"
+
+    # Inputs for OPS
+    DIAMETERS = np.arange(0.1, 2, 0.01) # ~190 diameters
+    IOR = 1.6 # Simple real refractive index
+
     print(f"Starting profiling for {len(DIAMETERS)} diameters...")
     
     # Run the function under cProfile
@@ -54,4 +56,4 @@ if __name__ == "__main__":
     p.strip_dirs().sort_stats('cumulative').print_stats(15)
     
     print(f"\nProfile data saved to '{profile_output_file}'.")
-    print("Run 'snakeviz ops_profile_data.prof' for visualization.")
+    print(f'Run \'snakeviz {profile_output_file}.prof\' for visualization.')
