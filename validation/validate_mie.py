@@ -2,7 +2,6 @@ import os
 import sys
 import numpy as np
 import miepython
-import matplotlib.pyplot as plt
 from mie_modules import mie_s12
 
 # Workaround to resolve path issues/being unable to see src directory
@@ -23,6 +22,7 @@ from src.ppops.OPS import OpticalParticleSpectrometer  # noqa: E402
 def compare_s1s2_methods(
     ior: complex,
     diameter: float,
+    plot: bool = False,
 ) -> None:
     """
     Compare S1 and S2 scattering amplitude functions computed using the
@@ -45,7 +45,7 @@ def compare_s1s2_methods(
     n_theta = 100  # Polar angle samples
     theta_max = np.arctan(ops.mirror_radius / ops.h)
     theta_values = np.linspace(np.pi / 2 - theta_max, np.pi / 2 + theta_max, n_theta)
-    size_parameter = np.pi / ops.wavelength * diameter
+    size_parameter = np.pi / ops.laser_wavelength * diameter
 
     # Compute S1 and S2 using custom Mie implementation
     s1 = np.zeros_like(theta_values, dtype=complex)
@@ -62,16 +62,19 @@ def compare_s1s2_methods(
         norm="wiscombe",
     )
 
-    plt.figure(figsize=(6, 4))
-    plt.plot(
-        np.real(miepython_s1), np.imag(miepython_s1), label="MiePython", marker="o"
-    )
-    plt.plot(np.real(s1), np.imag(s1), label="Custom Mie Modules", marker="x")
-    plt.xlabel("Real part")
-    plt.title(f"Comparison of S1 for IOR={ior} and Diameter={diameter} µm")
-    plt.legend()
-    plt.grid(True)
-    plt.savefig(f"{project_root}/validation/s1_comparison.png", dpi=600)
+    if plot:
+        import matplotlib.pyplot as plt  # noqa: E402
+
+        plt.figure(figsize=(6, 4))
+        plt.plot(
+            np.real(miepython_s1), np.imag(miepython_s1), label="MiePython", marker="o"
+        )
+        plt.plot(np.real(s1), np.imag(s1), label="Custom Mie Modules", marker="x")
+        plt.xlabel("Real part")
+        plt.title(f"Comparison of S1 for IOR={ior} and Diameter={diameter} µm")
+        plt.legend()
+        plt.grid(True)
+        plt.savefig(f"{project_root}/validation/s1_comparison.png", dpi=600)
 
     np.testing.assert_allclose(s1, miepython_s1, rtol=1e-3)
     np.testing.assert_allclose(s2, miepython_s2, rtol=1e-3)
@@ -79,5 +82,5 @@ def compare_s1s2_methods(
 
 if __name__ == "__main__":
     # Example test case
-    compare_s1s2_methods(ior=1.4 + 0j, diameter=1.0)
+    compare_s1s2_methods(ior=1.4 + 0j, diameter=1.0, plot=True)
     print("S1 and S2 functions match between custom implementation and miepython.")

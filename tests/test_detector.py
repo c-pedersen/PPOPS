@@ -13,18 +13,18 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 # 2. Get the parent directory of 'tests/' (which is the PPOPS project root)
 project_root = os.path.join(current_dir, "..")
 
-# 3. Add the PPOPS project root to the very start of the search path (sys.path)
-# This allows Python to correctly resolve 'from src.geometry...'
-sys.path.insert(0, os.path.abspath(project_root))
+# 3. Add the src directory to the very start of the search path (sys.path)
+# This allows Python to correctly resolve 'from ppops.geometry...'
+src_dir = os.path.join(project_root, "src")
+sys.path.insert(0, os.path.abspath(src_dir))
 
-print(f"Added to path: {project_root}")
 print("\n--- Current Python Search Paths (sys.path) ---")
 for p in sys.path:
     print(p)
 print("------------------------------------------")
 
 # The error label at the start of the file (E402) suppresses the ruff error that the module import is not at the top of the file
-from src.ppops.detector import (
+from ppops.detector import (
     laser_power_density,
     estimate_signal_noise,
     ELEMENTARY_CHARGE,
@@ -62,7 +62,8 @@ def test_laser_power_density_calculation():
 
 def test_laser_power_density_zero_power():
     """Test that zero power results in zero density."""
-    assert laser_power_density(0, 3e-3, 1e-3) == 0.0
+    with pytest.warns(UserWarning, match="Laser power in mW seems unrealistic"):
+        assert laser_power_density(0, 3e-3, 1e-3) == 0.0
 
 
 def test_laser_power_density_negative_inputs():

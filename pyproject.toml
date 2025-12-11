@@ -50,6 +50,9 @@ docs = [
 dev = [
     "build>=1.0.0",
     "twine>=6.0.0",
+    "ruff",
+    "mypy",
+    "ipykernel>=6.0.0",
 ]
 validation = [
     "matplotlib>=3.0.0",
@@ -76,8 +79,11 @@ typeCheckingMode = "standard"
 max-doc-length = 72
 max-line-length = 88
 
-# pyproject.toml
-[tool.pytest.ini_options]
+[tool.pytest]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "serial",
+]
 testpaths = ["tests"]
 pythonpath = ["src"]
 
