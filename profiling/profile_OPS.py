@@ -15,7 +15,8 @@ project_root = os.path.join(current_dir, "..")
 
 # 3. Add the PPOPS project root to the very start of the search path (sys.path)
 # This allows Python to correctly resolve 'from src.geometry...'
-sys.path.insert(0, os.path.abspath(project_root))
+project_dir = os.path.abspath(project_root)
+sys.path.insert(0, project_dir)
 
 print(f"Added to path: {project_root}")
 print("\n--- Current Python Search Paths (sys.path) ---")
@@ -38,24 +39,33 @@ def run_profiling():
 
 
 if __name__ == "__main__":
+        # Ensure a command line argument is given and only contains regular characters
+    if len(sys.argv) < 2:
+        print("Error: Please provide a test name as a command line argument.")
+        sys.exit(1)
+    test_name = sys.argv[1]
+    if not test_name.isalnum():
+        print("Error: Test name must only contain letters and numbers.")
+        sys.exit(1)
+
     # Output file for profiling results
-    profile_output_file = "OPS_profile_data.prof"
+    profile_output_file = f"OPS_profile_data_{test_name}.prof"
 
     # Inputs for OPS
     DIAMETERS = np.arange(0.1, 2, 0.01)  # ~190 diameters
     IOR = 1.6  # Simple real refractive index
 
-    print(f"Starting profiling for {len(DIAMETERS)} diameters...")
+    print(f"Starting profiling for {test_name} with {len(DIAMETERS)} diameters...")
 
     # Run the function under cProfile
-    cProfile.run("run_profiling()", profile_output_file)
+    cProfile.run("run_profiling()", project_dir+"/profiling/"+profile_output_file)
 
     # Print a text summary (pstats) for quick analysis
-    p = pstats.Stats(profile_output_file)
-    print("\n--- Top 15 Functions by Cumulative Time (cumtime) ---")
+    p = pstats.Stats(project_dir+"/profiling/"+profile_output_file)
+    print("\n--- Top 10 Functions by Cumulative Time (cumtime) ---")
 
     # Sort by 'cumulative' time (time spent in function and all sub-functions)
-    p.strip_dirs().sort_stats("cumulative").print_stats(15)
+    p.strip_dirs().sort_stats("cumulative").print_stats(10)
 
     print(f"\nProfile data saved to '{profile_output_file}'.")
     print(f"Run 'snakeviz {profile_output_file}.prof' for visualization.")
