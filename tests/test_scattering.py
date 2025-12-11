@@ -26,7 +26,7 @@ def test_Qsca_truncation():
     """
     ops = ppops.OpticalParticleSpectrometer()
     ops.h = (
-        0.00001  # Set a small height for the interaction region above the mirror vertex
+        0.000001  # Set a small height for the interaction region above the mirror vertex
     )
 
     iors = np.array([1.33 + 1e-8j, 1.5 + 0.01j, 2.0 + 0.1j, 1.0 + 0.0j, 1.6 + 0.0j])
@@ -41,10 +41,10 @@ def test_Qsca_truncation():
 
             trunc_qsca = (
                 ops.truncated_scattering_cross_section(
-                    ior=ior, diameter=diameter, n_theta=250, n_phi=250
+                    ior=ior, diameter=diameter, n_theta=500, n_phi=500
                 )
                 / geometric_cross_section
             )
 
             # Check that the truncated Qsca is approximately equal to the full Qsca
-            assert qsca == pytest.approx(trunc_qsca * 2, rel=1e-2)
+            assert qsca == pytest.approx(trunc_qsca * 2, rel=5e-3)
