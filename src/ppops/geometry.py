@@ -71,12 +71,12 @@ def ptz2r_sc(
         theta = np.asarray(theta)
     except Exception as e:
         raise TypeError("phi and theta must be convertible to numpy arrays") from e
-    
+
     # Geometric setup
     alpha = np.sin(phi)
     mu = np.cos(theta)
     sin_theta = np.sin(theta)
-    
+
     # Coefficients for quadratic mirror-intersection equation
     ax = alpha * sin_theta
     ay = np.sqrt(1 - alpha**2) * sin_theta
@@ -84,53 +84,59 @@ def ptz2r_sc(
     a = ax**2 + ay**2 + az**2
     b = 2 * y0 * ay
     c = y0**2 - mirror_radius_of_curvature**2
-    
+
     # Quadratic solutions
     discriminant = np.sqrt(b**2 - 4 * a * c)
     rp = (-b + discriminant) / (2 * a)
     rm = (-b - discriminant) / (2 * a)
-    
+
     # Compute maximum azimuthal collection angle
     r_min = np.sqrt(h**2 + mirror_radius**2)
     phi_max = np.arccos(np.clip(h / (r_min * sin_theta), -1, 1))
-    
+
     # Cartesian coordinates - shape (n, 3)
-    x = np.stack([
-        rp * np.sin(phi) * sin_theta,
-        rp * np.cos(phi) * sin_theta,
-        rp * np.cos(theta)
-    ], axis=-1)
-    
+    x = np.stack(
+        [
+            rp * np.sin(phi) * sin_theta,
+            rp * np.cos(phi) * sin_theta,
+            rp * np.cos(theta),
+        ],
+        axis=-1,
+    )
+
     # Compute mirror orientation and obliquity factor
     x_norm = x / np.linalg.norm(x, axis=-1, keepdims=True)
     s_norm = x - np.array([0, -y0, 0])
     s_norm = s_norm / np.linalg.norm(s_norm, axis=-1, keepdims=True)
-    
+
     # Obliquity factor: dot product along last axis
     obf = np.sum(x_norm * s_norm, axis=-1)
-    
+
     # Polarization weighting computation
     e0 = np.array([1, 0, 0])  # Laser electric field
-    k_i = np.array([0, 0, 1])  # Incident laser wave vector
+    _k_i = np.array([0, 0, 1])  # Incident laser wave vector
     k_s = x_norm  # Scattered wave vectors
-    
+
     # Cross product: k_i x k_s for each vector
     # k_i is [0, 0, 1], so cross product simplifies
-    n_vec = np.stack([
-        -k_s[:, 1],  # 0*k_s[2] - 1*k_s[1]
-        k_s[:, 0],   # 1*k_s[0] - 0*k_s[2]
-        np.zeros_like(k_s[:, 0])  # 0*k_s[1] - 0*k_s[0]
-    ], axis=-1)
-    
+    n_vec = np.stack(
+        [
+            -k_s[:, 1],  # 0*k_s[2] - 1*k_s[1]
+            k_s[:, 0],  # 1*k_s[0] - 0*k_s[2]
+            np.zeros_like(k_s[:, 0]),  # 0*k_s[1] - 0*k_s[0]
+        ],
+        axis=-1,
+    )
+
     n2 = np.sum(n_vec * n_vec, axis=-1)  # Magnitude squared
-    
+
     # Handle degenerate case
     degenerate = n2 < 1e-12
-    
+
     # Initialize outputs
     ws = np.ones_like(n2)
     wp = np.zeros_like(n2)
-    
+
     # Non-degenerate cases
     non_degen = ~degenerate
     if np.any(non_degen):
@@ -139,9 +145,9 @@ def ptz2r_sc(
         dot_e0_nhat = np.sum(e0 * n_hat, axis=-1, keepdims=True)
         e_s = dot_e0_nhat * n_hat
         e_p = e0 - e_s
-        
+
         e0_mag_sq = np.dot(e0, e0)
         ws[non_degen] = np.sum(e_s * e_s, axis=-1) / e0_mag_sq
         wp[non_degen] = np.sum(e_p * e_p, axis=-1) / e0_mag_sq
-    
+
     return rp, rm, x, phi_max, ws, wp, obf

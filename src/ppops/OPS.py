@@ -15,13 +15,12 @@ References:
 """
 
 import numpy as np
-from numpy.typing import ArrayLike
-from scipy.integrate import simpson
+from numpy.typing import ArrayLike, NDArray
+import scipy
 from miepython.core import S1_S2
 from . import detector
 from .geometry import ptz2r_sc
 from .mirror import mirror_depth
-
 
 class OpticalParticleSpectrometer:
     """Class representing the OPS instrument for scattering simulations."""
@@ -64,7 +63,7 @@ class OpticalParticleSpectrometer:
         diameter: float,
         n_theta: int = 50,
         n_phi: int = 40,
-    ) -> float:
+    ) -> NDArray[np.floating]:
         """
         Simulates OPS scattering and computed truncated cross-sections.
 
@@ -85,7 +84,7 @@ class OpticalParticleSpectrometer:
 
         Returns
         -------
-        float
+        np.ndarray
             Truncated scattering cross-section in square micrometers.
         """
         if not isinstance(n_theta, int) or n_theta <= 0:
@@ -107,11 +106,14 @@ class OpticalParticleSpectrometer:
         s2_sq = np.abs(mp_s1s2[1]) ** 2
 
         # Build complete grid of (theta, phi) pairs
-        all_thetas = []
-        all_phis = []
-        theta_indices = []
+        # Preallocate numpy arrays
+        n_points = n_theta * n_phi
+        all_thetas = np.zeros(n_points)
+        all_phis = np.zeros(n_points)
+        theta_indices = np.zeros(n_points, dtype=int)
         phi_values_per_theta = []  # Store phi arrays for later
 
+        idx = 0
         for j, theta in enumerate(theta_values):
             phi_max = np.arccos(
                 np.clip(self.h / (r_min * np.sqrt(1 - np.cos(theta) ** 2)), -1, 1)
@@ -119,14 +121,11 @@ class OpticalParticleSpectrometer:
             phi_values = np.linspace(-phi_max, phi_max, n_phi)
             phi_values_per_theta.append(phi_values)
 
-            all_thetas.extend([theta] * n_phi)
-            all_phis.extend(phi_values)
-            theta_indices.extend([j] * n_phi)
-
-        # Convert to arrays
-        all_thetas = np.array(all_thetas)
-        all_phis = np.array(all_phis)
-        theta_indices = np.array(theta_indices)
+            # Fill arrays using slicing
+            all_thetas[idx:idx+n_phi] = theta
+            all_phis[idx:idx+n_phi] = phi_values
+            theta_indices[idx:idx+n_phi] = j
+            idx += n_phi
 
         # Single vectorized call for ALL geometry calculations
         _, _, _, _, ws, wp, _ = ptz2r_sc(
@@ -148,15 +147,16 @@ class OpticalParticleSpectrometer:
         theta_integrand = np.zeros(n_theta)
         for j in range(n_theta):
             # Integrate over phi using Simpson's rule
-            theta_integrand[j] = simpson(
+            theta_integrand[j] = scipy.integrate.simpson(
                 integrand_grid[j, :], x=phi_values_per_theta[j]
             ) * np.sin(theta_values[j])
 
         # Integrate over theta using Simpson's rule
-        total_signal = simpson(theta_integrand, x=theta_values)
+        total_signal = scipy.integrate.simpson(theta_integrand, x=theta_values)
 
         geometric_cross_section = np.pi * (diameter / 2) ** 2
-        return total_signal * geometric_cross_section
+        truncated_csca = np.array(total_signal * geometric_cross_section, dtype=float)
+        return truncated_csca
 
     def estimate_signal_noise(
         self,
