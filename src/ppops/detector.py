@@ -25,10 +25,8 @@ Citations:
       spectrometer for PM2.5 aerosol measurements. Aerosol Science and
       Technology 50, 88-99.
       https://doi.org/10.1080/02786826.2015.1131809
-    - Thor Labs. TIA60 Transimpedance Amplifier Datasheet.
-    https://www.thorlabs.com/drawings/c627bb63fbc792f9-BE0A1D53-FE71-D4E9-369F32E2683F2FB6/TIA60-SpecSheet.pdf
-    - Hamamatsu Photonics. H10720 Series Photomultiplier Tube Datasheet.
-    https://www.hamamatsu.com/content/dam/hamamatsu-photonics/sites/documents/99_SALES_LIBRARY/etd/H10720_H10721_TPMO1062E.pdf
+    - Thor Labs. TIA60 Transimpedance Amplifier Datasheet. https://www.thorlabs.com/drawings/c627bb63fbc792f9-BE0A1D53-FE71-D4E9-369F32E2683F2FB6/TIA60-SpecSheet.pdf
+    - Hamamatsu Photonics. H10720 Series Photomultiplier Tube Datasheet. https://www.hamamatsu.com/content/dam/hamamatsu-photonics/sites/documents/99_SALES_LIBRARY/etd/H10720_H10721_TPMO1062E.pdf
 
 """
 
@@ -57,11 +55,11 @@ def laser_power_density(
     beam_major: float = 3e-3,
     beam_minor: float = 1e-3,
 ) -> float:
-    """
-    Return the laser power density at the aerosol stream. The assumed
-    beam geometry is an oval. Note: the beam dimensions are taken from
-    Gao et al. 2016 at the laser assembly exit, not at the aerosol
-    stream. This function assumes the beam does not diverge
+    """Return the laser power density at the aerosol stream.
+
+    The assumed beam geometry is an oval. Note: the beam dimensions are
+    taken from Gao et al. 2016 at the laser assembly exit, not at the
+    aerosol stream. This function assumes the beam does not diverge
     significantly over this optical path which may or may not be a valid
     assumption.
 
@@ -69,10 +67,12 @@ def laser_power_density(
     ----------
     laser_power : float
         Laser power in mW.
-    beam_major : float
-        Length of major axis of the oval laser beam at the aerosol stream in meters.
-    beam_minor : float
-        Length of minor axis of the oval laser beam at the aerosol stream in meters.
+    beam_major : float, optional
+        Length of major axis of the oval laser beam at the aerosol
+        stream in meters. Default is 3e-3.
+    beam_minor : float, optional
+        Length of minor axis of the oval laser beam at the aerosol
+        stream in meters. Default is 1e-3.
 
     Returns
     -------
@@ -105,31 +105,32 @@ def estimate_signal_noise(
     bandwidth: float = BANDWIDTH,
     input_current_noise: float = TIA60_INPUT_CURRENT_NOISE,
 ) -> tuple[float | NDArray[np.float64], float | NDArray[np.float64]]:
-    """
-    Return signal and noise estimates for a given truncated single
+    """Return signal and noise estimates.
+
+    Computes signal and noise estimates for a given truncated single
     scattering cross section and laser power.
 
     Parameters
     ----------
-    truncated_csca : float | NDArray[np.float64]
+    truncated_csca : float or np.ndarray
         Truncated scattering cross section in units of µm².
     laser_power : float
         Laser power in mW.
-    anode_radiant_sensitivity : float
+    anode_radiant_sensitivity : float, optional
         Anode radiant sensitivity in A/W. Default is 2.2e5 A/W.
-    dark_current : float
+    dark_current : float, optional
         Dark current noise in A. Default is 1e-9 A.
-    bandwidth : float
+    bandwidth : float, optional
         Bandwidth in Hz. Default is 4e6 Hz.
-    input_current_noise : float
+    input_current_noise : float, optional
         Preamplifier input current noise in A/√Hz. Default is 4.8e-12 A/√Hz.
 
     Returns
     -------
-    tuple[NDArray[np.float64], NDArray[np.float64]] | tuple[float, float]
-        Tuple containing:
-        - signal_current: Estimated signal current (A).
-        - noise: Estimated noise (A).
+    signal_current : float or np.ndarray
+        Estimated signal current (A).
+    noise : float or np.ndarray
+        Estimated noise (A).
     """
 
     signal_current = (

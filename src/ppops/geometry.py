@@ -30,29 +30,41 @@ def ptz2r_sc(
     the spherical POPS mirror and determines polarization weighting factors
     (s- and p-polarization) based on instrument geometry.
 
-    Parameters:
-    -----------
-        phi (float): Azimuthal scattering angle [radians].
-        theta (float): Polar scattering angle [radians].
-        mirror_radius (float): Radius of the POPS mirror [mm].
-        mirror_radius_of_curvature (float): Radius of curvature of the POPS mirror [mm].
-        y0 (float): Distance from mirror vertex to particle-laser interaction
-            region along the mirror axis [mm].
-        h (float): Height of the particle-laser interaction region above
-            the mirror vertex [mm].
+    Parameters
+    ----------
+    phi : float
+        Azimuthal scattering angle [radians].
+    theta : float
+        Polar scattering angle [radians].
+    mirror_radius : float
+        Radius of the POPS mirror [mm].
+    mirror_radius_of_curvature : float
+        Radius of curvature of the POPS mirror [mm].
+    y0 : float
+        Distance from mirror vertex to particle-laser interaction
+        region along the mirror axis [mm].
+    h : float
+        Height of the particle-laser interaction region above
+        the mirror vertex [mm].
 
-    Returns:
-    --------
-    tuple
-        - rp (float): Positive intersection distance from the scattering
-            region to the mirror surface [mm].
-        - rm (float): Negative intersection distance (unphysical, retained
-            for completeness).
-        - x (np.ndarray): Cartesian coordinates of intersection vector.
-        - phi_max (float): Maximum azimuthal half-angle collected by mirror.
-        - ws (float): s-polarization weighting factor (perpendicular).
-        - wp (float): p-polarization weighting factor (parallel).
-        - obf (float): Obliquity factor (cosine of incidence angle).
+    Returns
+    -------
+    rp : float
+        Positive intersection distance from the scattering
+        region to the mirror surface [mm].
+    rm : float
+        Negative intersection distance (unphysical, retained
+        for completeness).
+    x : np.ndarray
+        Cartesian coordinates of intersection vector.
+    phi_max : float
+        Maximum azimuthal half-angle collected by mirror.
+    ws : float
+        s-polarization weighting factor (perpendicular).
+    wp : float
+        p-polarization weighting factor (parallel).
+    obf : float
+        Obliquity factor (cosine of incidence angle).
     """
     # -------------------------------------------------------------------------
     # Geometric setup: ray direction and intersection with spherical mirror
