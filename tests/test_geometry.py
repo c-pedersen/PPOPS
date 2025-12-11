@@ -1,4 +1,3 @@
-import pytest
 import numpy as np
 import sys
 import os
@@ -19,7 +18,8 @@ print("\n--- Current Python Search Paths (sys.path) ---")
 for p in sys.path:
     print(p)
 print("------------------------------------------")
-from src.ppops.geometry import ptz2r_sc
+# The error label below (E402) suppresses the ruff error that the module import is not at the top of the file
+from src.ppops.geometry import ptz2r_sc # noqa: E402
 
 # Tolerance for floating point comparisons
 TOL = 1e-6

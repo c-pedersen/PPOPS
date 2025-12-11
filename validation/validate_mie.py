@@ -16,7 +16,8 @@ project_root = os.path.join(current_dir, "..")
 # This allows Python to correctly resolve 'from src.geometry...'
 sys.path.insert(0, os.path.abspath(project_root))
 
-from src.ppops.OPS import OpticalParticleSpectrometer
+# The error label below (E402) suppresses the ruff error that the module import is not at the top of the file
+from src.ppops.OPS import OpticalParticleSpectrometer # noqa: E402
 
 
 def compare_s1s2_methods(

@@ -21,6 +21,7 @@ for p in sys.path:
     print(p)
 print("------------------------------------------")
 
+# The error label below (E402) suppresses the ruff error that the module import is not at the top of the file
 from src.ppops.detector import (
     laser_power_density,
     estimate_signal_noise,
@@ -29,7 +30,7 @@ from src.ppops.detector import (
     H10720_110_DARK_CURRENT,
     BANDWIDTH,
     TIA60_INPUT_CURRENT_NOISE
-)
+) # noqa: E402
 
 # TESTS
 

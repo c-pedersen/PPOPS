@@ -14,7 +14,8 @@ project_root = os.path.join(current_dir, "..")
 # 3. Add the PPOPS project root to the very start of the search path (sys.path)
 sys.path.insert(0, os.path.abspath(project_root))
 
-from src import ppops
+# The error label below (E402) suppresses the ruff error that the module import is not at the top of the file
+from src import ppops # noqa: E402
 
 def test_Qsca_truncation():
     """
