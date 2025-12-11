@@ -14,31 +14,37 @@ project_root = os.path.join(current_dir, "..")
 # 3. Add the PPOPS project root to the very start of the search path (sys.path)
 sys.path.insert(0, os.path.abspath(project_root))
 
-from src import ppops
+# The error label below (E402) suppresses the ruff error that the module import is not at the top of the file
+from src import ppops  # noqa: E402
+
 
 def test_Qsca_truncation():
     """
     Test that the truncated scattering cross section calculation
-    in OPS matches the full scattering cross section within a small 
+    in OPS matches the full scattering cross section within a small
     tolerance.
     """
     ops = ppops.OpticalParticleSpectrometer()
-    ops.h = 0.00001  # Set a small height for the interaction region above the mirror vertex
+    ops.h = (
+        0.00001  # Set a small height for the interaction region above the mirror vertex
+    )
 
     iors = np.array([1.33 + 1e-8j, 1.5 + 0.01j, 2.0 + 0.1j, 1.0 + 0.0j, 1.6 + 0.0j])
     diameters = np.array([0.1, 0.5, 1.0, 2.0, 5.0])  # in micrometers
 
     for ior in iors:
         for diameter in diameters:
-            geometric_cross_section = (np.pi * (diameter / 2) ** 2)
-            qsca = miepython.efficiencies(m=ior, d=diameter, lambda0=ops.laser_wavelength)[1]
+            geometric_cross_section = np.pi * (diameter / 2) ** 2
+            qsca = miepython.efficiencies(
+                m=ior, d=diameter, lambda0=ops.laser_wavelength
+            )[1]
 
-            trunc_qsca = ops.truncated_scattering_cross_section(
-                ior=ior,
-                diameter=diameter,
-                n_theta=250,
-                n_phi=250
-            ) / geometric_cross_section
+            trunc_qsca = (
+                ops.truncated_scattering_cross_section(
+                    ior=ior, diameter=diameter, n_theta=250, n_phi=250
+                )
+                / geometric_cross_section
+            )
 
             # Check that the truncated Qsca is approximately equal to the full Qsca
             assert qsca == pytest.approx(trunc_qsca * 2, rel=1e-2)

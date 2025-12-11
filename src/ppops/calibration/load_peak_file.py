@@ -1,5 +1,5 @@
 """
-Load OPS peak files from binary format and output as a dictionary of 
+Load OPS peak files from binary format and output as a dictionary of
 numpy arrays.
 """
 
@@ -22,7 +22,7 @@ def load_peak_file(filename: str) -> dict:
     -------
     dict
         A dictionary containing:
-        
+
         - 'peak_height' : ndarray of int32
             Peak height in digitizer bins
         - 'peak_width' : ndarray of int32
