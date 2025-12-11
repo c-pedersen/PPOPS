@@ -1,8 +1,10 @@
 .. mdinclude:: ../../README.md
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :caption: Underlying Physics
+   :hidden:
+
+   mie_theory
 
 .. toctree::
    :caption: Example Usage
@@ -15,3 +17,7 @@
    :hidden:
 
    changelog
+
+.. toctree::
+   :caption: API Reference
+   :hidden:

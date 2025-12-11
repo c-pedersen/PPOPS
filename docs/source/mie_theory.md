@@ -1,4 +1,5 @@
-# `mie_modules.py` — Mie Scattering Utilities
+# Physical Basis: Mie Theory
+## `mie_modules.py` — Mie Scattering Utilities
 
 This module implements numerical routines for computing **Mie scattering** by spherical particles.  
 It provides functions for calculating:
