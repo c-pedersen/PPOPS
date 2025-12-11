@@ -50,6 +50,9 @@ dev = [
 validation = [
     "matplotlib>=3.0.0",
 ]
+profiling = [
+    "snakeviz",
+]
 
 [project.urls]
 Homepage = "https://github.com/c-pedersen/PPOPS"
