@@ -126,10 +126,10 @@ def estimate_signal_noise(
 
     Returns
     -------
-    tuple[NDArray[np.float64], NDArray[np.float64]] | tuple[float, float]
-        Tuple containing:
-        - signal_current: Estimated signal current (A).
-        - noise: Estimated noise (A).
+    signal_current : float or np.ndarray
+        Estimated signal current (A).
+    noise : float or np.ndarray
+        Estimated noise (A).
     """
 
     signal_current = (

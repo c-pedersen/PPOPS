@@ -1,4 +1,6 @@
+
 # Physical Basis: Mie Theory
+
 ## `mie_modules.py` — Mie Scattering Utilities
 
 This module implements numerical routines for computing **Mie scattering** by spherical particles.  
@@ -159,4 +161,3 @@ I(\theta) \propto |S_1|^2 \quad \text{or} \quad |S_2|^2
 
 - **C. Mätzler (2002)**  
   MATLAB codes for Mie scattering, IAP Research Report.
-
