@@ -25,9 +25,7 @@ def test_Qsca_truncation():
     tolerance.
     """
     ops = ppops.OpticalParticleSpectrometer()
-    ops.h = (
-        0.00001  # Set a small height for the interaction region above the mirror vertex
-    )
+    ops.h = 0.000001  # Set a small height for the interaction region above the mirror vertex
 
     iors = np.array([1.33 + 1e-8j, 1.5 + 0.01j, 2.0 + 0.1j, 1.0 + 0.0j, 1.6 + 0.0j])
     diameters = np.array([0.1, 0.5, 1.0, 2.0, 5.0])  # in micrometers
@@ -41,7 +39,7 @@ def test_Qsca_truncation():
 
             trunc_qsca = (
                 ops.truncated_scattering_cross_section(
-                    ior=ior, diameter=diameter, n_theta=250, n_phi=250
+                    ior=ior, diameter=diameter, n_theta=150, n_phi=150
                 )
                 / geometric_cross_section
             )

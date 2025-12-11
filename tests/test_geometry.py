@@ -31,8 +31,8 @@ def test_basic_run_and_output_structure():
     and returns the expected output structure and types.
     """
     # Typical inputs: 90-degree scattering, center offset 0
-    phi = np.pi / 4
-    theta = np.pi / 2
+    phi = np.array([np.pi / 4])
+    theta = np.array([np.pi / 2])
     y0 = 0.0
     h = 7.68 + 2.159
     mirror_radius = 12.5
@@ -53,13 +53,16 @@ def test_basic_run_and_output_structure():
     rp, rm, x, phi_max, ws, wp, obf = result
 
     # 2. Check the types of the main outputs
-    assert isinstance(rp, (float, np.float64)), "rp should be a float."
+    assert isinstance(rp, np.ndarray), "rp should be an array of floats."
     assert isinstance(x, np.ndarray), "x should be a numpy array."
-    assert x.shape == (3,), "x (Cartesian coordinates) should be a 3-element array."
-    assert isinstance(ws, (float, np.float64)), "ws should be a float."
+    assert x.shape == (len(phi), 3), "x (Cartesian coordinates) should be a nx3 array."
+    assert isinstance(ws, np.ndarray), "ws should be an array of floats."
+    assert isinstance(wp, np.ndarray), "wp should be an array of floats."
 
     # 3. Check for obvious non-physical results (rp should be positive)
-    assert rp > 0, "Positive intersection distance (rp) must be greater than zero."
+    assert np.all(rp > 0), (
+        "Positive intersection distance (rp) must be greater than zero."
+    )
 
 
 def test_polarization_conservation():
@@ -71,14 +74,12 @@ def test_polarization_conservation():
     mirror_radius = 12.5
     mirror_radius_of_curvature = 20.0
 
-    # Test a few different realistic geometries
-    test_cases = [
-        (0.0, np.pi / 4, 0.0),  # Phi = 0 (Scattering in y-z plane)
-        (np.pi / 2, np.pi / 2, 5.0),  # Phi = 90 deg (Scattering in x-z plane), y-offset
-        (0.8, 1.2, -3.0),  # Arbitrary non-trivial case
-    ]
+    # Test a few different geometries
+    phi = np.array([0.0, np.pi / 4, 0.8])
+    theta = np.array([np.pi / 4, np.pi / 2, 5.0])
+    y0_values = [0.8, 1.2, -3.0]
 
-    for phi, theta, y0 in test_cases:
+    for y0 in y0_values:
         _, _, _, _, ws, wp, _ = ptz2r_sc(
             phi=phi,
             theta=theta,
@@ -91,14 +92,14 @@ def test_polarization_conservation():
         # Check that ws + wp equals 1.0 within tolerance
         np.testing.assert_almost_equal(
             ws + wp,
-            1.0,
+            np.ones_like(ws),
             decimal=TOL,
-            err_msg=f"Polarization weights (ws + wp) must sum to 1.0 for phi={phi}, theta={theta}, y0={y0}",
+            err_msg="Polarization weights (ws + wp) must sum to 1.0",
         )
 
         # Check bounds
-        assert 0.0 <= ws <= 1.0
-        assert 0.0 <= wp <= 1.0
+        assert np.all((0.0 <= ws) & (ws <= 1.0))
+        assert np.all((0.0 <= wp) & (wp <= 1.0))
 
 
 def test_degenerate_forward_scattering():
@@ -107,8 +108,8 @@ def test_degenerate_forward_scattering():
     where the scattering plane is undefined. The code handles this
     explicitly by setting ws=1.0 and wp=0.0.
     """
-    phi = 0.5  # Arbitrary azimuthal angle
-    theta = 0.0  # Forward scattering
+    phi = np.array([0.5])  # Arbitrary azimuthal angle
+    theta = np.array([0.0])  # Forward scattering
     y0 = 0.0
     h = 7.68 + 2.159
     mirror_radius = 12.5
@@ -126,10 +127,16 @@ def test_degenerate_forward_scattering():
     # In the degenerate case (n2 < 1e-12), the function should return:
     # ws = 1.0 and wp = 0.0
     np.testing.assert_almost_equal(
-        ws, 1.0, decimal=TOL, err_msg="WS should be 1.0 in degenerate (theta=0) case."
+        ws,
+        np.ones_like(ws),
+        decimal=TOL,
+        err_msg="WS should be 1.0 in degenerate (theta=0) case.",
     )
     np.testing.assert_almost_equal(
-        wp, 0.0, decimal=TOL, err_msg="WP should be 0.0 in degenerate (theta=0) case."
+        wp,
+        np.zeros_like(wp),
+        decimal=TOL,
+        err_msg="WP should be 0.0 in degenerate (theta=0) case.",
     )
 
 
@@ -154,8 +161,8 @@ def test_pure_s_polarization():
 
     This means ws = 0.0 and wp = 1.0. This is a pure p-polarization case.
     """
-    phi = np.pi / 2
-    theta = np.pi / 2
+    phi = np.array([np.pi / 2])
+    theta = np.array([np.pi / 2])
     y0 = 0.0
     h = 7.68 + 2.159
     mirror_radius = 12.5
@@ -172,13 +179,13 @@ def test_pure_s_polarization():
 
     np.testing.assert_almost_equal(
         ws,
-        0.0,
+        np.zeros_like(ws),
         decimal=TOL,
         err_msg="WS should be 0.0 in the pure p-polarization case (phi=pi/2, theta=pi/2).",
     )
     np.testing.assert_almost_equal(
         wp,
-        1.0,
+        np.ones_like(wp),
         decimal=TOL,
         err_msg="WP should be 1.0 in the pure p-polarization case (phi=pi/2, theta=pi/2).",
     )

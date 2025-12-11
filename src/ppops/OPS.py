@@ -15,7 +15,8 @@ References:
 """
 
 import numpy as np
-from numpy.typing import ArrayLike
+from numpy.typing import ArrayLike, NDArray
+import scipy
 from miepython.core import S1_S2
 from . import detector
 from .geometry import ptz2r_sc
@@ -63,7 +64,7 @@ class OpticalParticleSpectrometer:
         diameter: float,
         n_theta: int = 50,
         n_phi: int = 40,
-    ) -> float:
+    ) -> NDArray[np.floating]:
         """
         Simulates OPS scattering and computed truncated cross-sections.
 
@@ -84,7 +85,7 @@ class OpticalParticleSpectrometer:
 
         Returns
         -------
-        float
+        np.ndarray
             Truncated scattering cross-section in square micrometers.
         """
         if not isinstance(n_theta, int) or n_theta <= 0:
@@ -92,9 +93,7 @@ class OpticalParticleSpectrometer:
         if not isinstance(n_phi, int) or n_phi <= 0:
             raise ValueError("n_phi must be a positive integer.")
 
-        # -------------------------------------------------------------------------
-        # Derived Quantities
-        # -------------------------------------------------------------------------
+        # Derived quantities
         theta_max = np.arctan(self.mirror_radius / self.h)
         theta_values = np.linspace(
             np.pi / 2 - theta_max, np.pi / 2 + theta_max, n_theta
@@ -102,55 +101,63 @@ class OpticalParticleSpectrometer:
         size_parameter = np.pi / self.laser_wavelength * diameter
         r_min = np.sqrt(self.mirror_radius**2 + self.h**2)
 
-        # -------------------------------------------------------------------------
-        # Integration Setup
-        # -------------------------------------------------------------------------
-        integrand = np.zeros((n_theta, n_phi))
-
+        # Compute S1, S2
         mp_s1s2 = S1_S2(m=ior, x=size_parameter, mu=np.cos(theta_values), norm="qsca")
-        s1 = mp_s1s2[0]
-        s2 = mp_s1s2[1]
+        s1_sq = np.abs(mp_s1s2[0]) ** 2
+        s2_sq = np.abs(mp_s1s2[1]) ** 2
+
+        # Build complete grid of (theta, phi) pairs
+        # Preallocate numpy arrays
+        n_points = n_theta * n_phi
+        all_thetas = np.zeros(n_points)
+        all_phis = np.zeros(n_points)
+        theta_indices = np.zeros(n_points, dtype=int)
+        phi_values_per_theta = []  # Store phi arrays for later
+
+        idx = 0
         for j, theta in enumerate(theta_values):
             phi_max = np.arccos(
                 np.clip(self.h / (r_min * np.sqrt(1 - np.cos(theta) ** 2)), -1, 1)
             )
             phi_values = np.linspace(-phi_max, phi_max, n_phi)
+            phi_values_per_theta.append(phi_values)
 
-            for k, phi in enumerate(phi_values):
-                _, _, _, _, ws, wp, _ = ptz2r_sc(
-                    phi=phi,
-                    theta=theta,
-                    mirror_radius=self.mirror_radius,
-                    mirror_radius_of_curvature=self.mirror_radius_of_curvature,
-                    y0=self.y0,
-                    h=self.h,
-                )
-                integrand[j, k] = ws * np.abs(s1[j]) ** 2 + wp * np.abs(s2[j]) ** 2
+            # Fill arrays using slicing
+            all_thetas[idx : idx + n_phi] = theta
+            all_phis[idx : idx + n_phi] = phi_values
+            theta_indices[idx : idx + n_phi] = j
+            idx += n_phi
 
-        # -------------------------------------------------------------------------
-        # Double Integration
-        # -------------------------------------------------------------------------
-        total_signal = 0.0
-        for j, theta in enumerate(theta_values):
-            phi_max = np.arccos(
-                np.clip(self.h / (r_min * np.sqrt(1 - np.cos(theta) ** 2)), -1, 1)
-            )
-            phi_values = np.linspace(-phi_max, phi_max, n_phi)
-            d_phi = phi_values[1] - phi_values[0]
-            sum_phi = np.sum(integrand[j, :]) * d_phi
-            total_signal += sum_phi * np.sin(theta)
+        # Single vectorized call for ALL geometry calculations
+        _, _, _, _, ws, wp, _ = ptz2r_sc(
+            phi=all_phis,
+            theta=all_thetas,
+            mirror_radius=self.mirror_radius,
+            mirror_radius_of_curvature=self.mirror_radius_of_curvature,
+            y0=self.y0,
+            h=self.h,
+        )
 
-        d_theta = theta_values[1] - theta_values[0]
-        total_signal *= d_theta
+        # Compute integrand for all points
+        integrand = ws * s1_sq[theta_indices] + wp * s2_sq[theta_indices]
 
-        # -------------------------------------------------------------------------
-        # Compute Cross Sections
-        # -------------------------------------------------------------------------
-        trunc_qsca = total_signal
+        # Reshape back to (n_theta, n_phi) grid
+        integrand_grid = integrand.reshape(n_theta, n_phi)
+
+        # Use Simpson's rule for both dimensions
+        theta_integrand = np.zeros(n_theta)
+        for j in range(n_theta):
+            # Integrate over phi using Simpson's rule
+            theta_integrand[j] = scipy.integrate.simpson(
+                integrand_grid[j, :], x=phi_values_per_theta[j]
+            ) * np.sin(theta_values[j])
+
+        # Integrate over theta using Simpson's rule
+        total_signal = scipy.integrate.simpson(theta_integrand, x=theta_values)
+
         geometric_cross_section = np.pi * (diameter / 2) ** 2
-        trunc_csca = trunc_qsca * geometric_cross_section
-
-        return trunc_csca
+        truncated_csca = np.array(total_signal * geometric_cross_section, dtype=float)
+        return truncated_csca
 
     def estimate_signal_noise(
         self,
