@@ -39,7 +39,7 @@ test = [
     "pytest-cov>=6.0.0",
 ]
 docs = [
-    "sphinx>=9.0.0",
+    "sphinx>=8.0.0",
     "sphinx-mdinclude>=0.5.0",
     "sphinx-autodoc-typehints>=1.25.0",
     "sphinx-autoapi>=3.0.0",

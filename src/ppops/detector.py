@@ -25,10 +25,8 @@ Citations:
       spectrometer for PM2.5 aerosol measurements. Aerosol Science and
       Technology 50, 88-99.
       https://doi.org/10.1080/02786826.2015.1131809
-    - Thor Labs. TIA60 Transimpedance Amplifier Datasheet.
-    https://www.thorlabs.com/drawings/c627bb63fbc792f9-BE0A1D53-FE71-D4E9-369F32E2683F2FB6/TIA60-SpecSheet.pdf
-    - Hamamatsu Photonics. H10720 Series Photomultiplier Tube Datasheet.
-    https://www.hamamatsu.com/content/dam/hamamatsu-photonics/sites/documents/99_SALES_LIBRARY/etd/H10720_H10721_TPMO1062E.pdf
+    - Thor Labs. TIA60 Transimpedance Amplifier Datasheet. https://www.thorlabs.com/drawings/c627bb63fbc792f9-BE0A1D53-FE71-D4E9-369F32E2683F2FB6/TIA60-SpecSheet.pdf
+    - Hamamatsu Photonics. H10720 Series Photomultiplier Tube Datasheet. https://www.hamamatsu.com/content/dam/hamamatsu-photonics/sites/documents/99_SALES_LIBRARY/etd/H10720_H10721_TPMO1062E.pdf
 
 """
 
