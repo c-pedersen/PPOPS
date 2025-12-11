@@ -40,12 +40,12 @@ def run_profiling():
 
 
 if __name__ == "__main__":
-        # Ensure a command line argument is given and only contains regular characters
+    # Ensure a command line argument is given and only contains regular characters
     if len(sys.argv) < 2:
         print("Error: Please provide a test name as a command line argument.")
         sys.exit(1)
     test_name = sys.argv[1]
-    if not all(c.isalnum() or c == '_' for c in test_name):
+    if not all(c.isalnum() or c == "_" for c in test_name):
         print("Error: Test name must only contain letters, numbers, or underscores.")
         sys.exit(1)
 
@@ -59,10 +59,10 @@ if __name__ == "__main__":
     print(f"Starting profiling for {test_name} with {len(DIAMETERS)} diameters...")
 
     # Run the function under cProfile
-    cProfile.run("run_profiling()", project_path+"/profiling/"+profile_output_file)
+    cProfile.run("run_profiling()", project_path + "/profiling/" + profile_output_file)
 
     # Print a text summary (pstats) for quick analysis
-    p = pstats.Stats(project_path+"/profiling/"+profile_output_file)
+    p = pstats.Stats(project_path + "/profiling/" + profile_output_file)
     print("\n--- Top 10 Functions by Cumulative Time (cumtime) ---")
 
     # Sort by 'cumulative' time (time spent in function and all sub-functions)

@@ -22,6 +22,7 @@ from . import detector
 from .geometry import ptz2r_sc
 from .mirror import mirror_depth
 
+
 class OpticalParticleSpectrometer:
     """Class representing the OPS instrument for scattering simulations."""
 
@@ -122,9 +123,9 @@ class OpticalParticleSpectrometer:
             phi_values_per_theta.append(phi_values)
 
             # Fill arrays using slicing
-            all_thetas[idx:idx+n_phi] = theta
-            all_phis[idx:idx+n_phi] = phi_values
-            theta_indices[idx:idx+n_phi] = j
+            all_thetas[idx : idx + n_phi] = theta
+            all_phis[idx : idx + n_phi] = phi_values
+            theta_indices[idx : idx + n_phi] = j
             idx += n_phi
 
         # Single vectorized call for ALL geometry calculations

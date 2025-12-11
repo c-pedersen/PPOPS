@@ -53,20 +53,16 @@ def test_basic_run_and_output_structure():
     rp, rm, x, phi_max, ws, wp, obf = result
 
     # 2. Check the types of the main outputs
-    assert isinstance(rp, np.ndarray), (
-        "rp should be an array of floats."
-    )
+    assert isinstance(rp, np.ndarray), "rp should be an array of floats."
     assert isinstance(x, np.ndarray), "x should be a numpy array."
     assert x.shape == (len(phi), 3), "x (Cartesian coordinates) should be a nx3 array."
-    assert isinstance(ws, np.ndarray), (
-        "ws should be an array of floats."
-    )
-    assert isinstance(wp, np.ndarray), (
-        "wp should be an array of floats."
-    )
+    assert isinstance(ws, np.ndarray), "ws should be an array of floats."
+    assert isinstance(wp, np.ndarray), "wp should be an array of floats."
 
     # 3. Check for obvious non-physical results (rp should be positive)
-    assert np.all(rp > 0), "Positive intersection distance (rp) must be greater than zero."
+    assert np.all(rp > 0), (
+        "Positive intersection distance (rp) must be greater than zero."
+    )
 
 
 def test_polarization_conservation():
@@ -131,10 +127,16 @@ def test_degenerate_forward_scattering():
     # In the degenerate case (n2 < 1e-12), the function should return:
     # ws = 1.0 and wp = 0.0
     np.testing.assert_almost_equal(
-        ws, np.ones_like(ws), decimal=TOL, err_msg="WS should be 1.0 in degenerate (theta=0) case."
+        ws,
+        np.ones_like(ws),
+        decimal=TOL,
+        err_msg="WS should be 1.0 in degenerate (theta=0) case.",
     )
     np.testing.assert_almost_equal(
-        wp, np.zeros_like(wp), decimal=TOL, err_msg="WP should be 0.0 in degenerate (theta=0) case."
+        wp,
+        np.zeros_like(wp),
+        decimal=TOL,
+        err_msg="WP should be 0.0 in degenerate (theta=0) case.",
     )
 
 
