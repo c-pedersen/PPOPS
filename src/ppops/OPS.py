@@ -100,40 +100,54 @@ class OpticalParticleSpectrometer:
         size_parameter = np.pi / self.laser_wavelength * diameter
         r_min = np.sqrt(self.mirror_radius**2 + self.h**2)
         
-        # Compute S1, S2 for all theta values at once
+        # Compute S1, S2
         mp_s1s2 = S1_S2(m=ior, x=size_parameter, mu=np.cos(theta_values), norm="qsca")
-        s1 = mp_s1s2[0]
-        s2 = mp_s1s2[1]
-        s1_sq = np.abs(s1) ** 2
-        s2_sq = np.abs(s2) ** 2
+        s1_sq = np.abs(mp_s1s2[0]) ** 2
+        s2_sq = np.abs(mp_s1s2[1]) ** 2
         
-        # Integration setup
-        integrand = np.zeros((n_theta, n_phi))
+        # Build complete grid of (theta, phi) pairs
+        all_thetas = []
+        all_phis = []
+        theta_indices = []
+        n_phi_per_theta = []
         
-        # For each theta, vectorize over phi
         for j, theta in enumerate(theta_values):
             phi_max = np.arccos(
                 np.clip(self.h / (r_min * np.sqrt(1 - np.cos(theta) ** 2)), -1, 1)
             )
             phi_values = np.linspace(-phi_max, phi_max, n_phi)
             
-            # Create theta array (constant for this phi sweep)
-            theta_array = np.full_like(phi_values, theta)
-            
-            # Call ptz2r_sc once per theta
-            _, _, _, _, ws, wp, _ = ptz2r_sc(
-                phi=phi_values,
-                theta=theta_array,
-                mirror_radius=self.mirror_radius,
-                mirror_radius_of_curvature=self.mirror_radius_of_curvature,
-                y0=self.y0,
-                h=self.h,
-            )
-            
-            # Compute integrand for this entire phi sweep
-            integrand[j, :] = ws * s1_sq[j] + wp * s2_sq[j]
+            all_thetas.extend([theta] * n_phi)
+            all_phis.extend(phi_values)
+            theta_indices.extend([j] * n_phi)
+            n_phi_per_theta.append(len(phi_values))
         
-        # Double integration
+        # Convert to arrays
+        all_thetas = np.array(all_thetas)
+        all_phis = np.array(all_phis)
+        theta_indices = np.array(theta_indices)
+        
+        # Single vectorized call for ALL geometry calculations
+        _, _, _, _, ws, wp, _ = ptz2r_sc(
+            phi=all_phis,
+            theta=all_thetas,
+            mirror_radius=self.mirror_radius,
+            mirror_radius_of_curvature=self.mirror_radius_of_curvature,
+            y0=self.y0,
+            h=self.h,
+        )
+        
+        # Compute integrand
+        integrand = ws * s1_sq[theta_indices] + wp * s2_sq[theta_indices]
+        
+        # Reshape back to (n_theta, n_phi) for integration
+        integrand_grid = np.zeros((n_theta, n_phi))
+        idx = 0
+        for j, n_phi_j in enumerate(n_phi_per_theta):
+            integrand_grid[j, :n_phi_j] = integrand[idx:idx + n_phi_j]
+            idx += n_phi_j
+        
+        # Integration
         total_signal = 0.0
         for j, theta in enumerate(theta_values):
             phi_max = np.arccos(
@@ -141,18 +155,14 @@ class OpticalParticleSpectrometer:
             )
             phi_values = np.linspace(-phi_max, phi_max, n_phi)
             d_phi = phi_values[1] - phi_values[0]
-            sum_phi = np.sum(integrand[j, :]) * d_phi
+            sum_phi = np.sum(integrand_grid[j, :]) * d_phi
             total_signal += sum_phi * np.sin(theta)
         
         d_theta = theta_values[1] - theta_values[0]
         total_signal *= d_theta
         
-        # Compute cross sections
-        trunc_qsca = total_signal
         geometric_cross_section = np.pi * (diameter / 2) ** 2
-        trunc_csca = trunc_qsca * geometric_cross_section
-        
-        return trunc_csca
+        return total_signal * geometric_cross_section
 
     def estimate_signal_noise(
         self,

@@ -45,8 +45,8 @@ if __name__ == "__main__":
         print("Error: Please provide a test name as a command line argument.")
         sys.exit(1)
     test_name = sys.argv[1]
-    if not test_name.isalnum():
-        print("Error: Test name must only contain letters and numbers.")
+    if not all(c.isalnum() or c == '_' for c in test_name):
+        print("Error: Test name must only contain letters, numbers, or underscores.")
         sys.exit(1)
 
     # Output file for profiling results
@@ -69,4 +69,4 @@ if __name__ == "__main__":
     p.strip_dirs().sort_stats("cumulative").print_stats(10)
 
     print(f"\nProfile data saved to '{profile_output_file}'.")
-    print(f"Run 'snakeviz {profile_output_file}.prof' for visualization.")
+    print(f"Run 'snakeviz profiling/{profile_output_file}' for visualization.")
