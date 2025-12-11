@@ -57,6 +57,7 @@ jobs:
 
       - name: Install dependencies (including mypy)
         run: |
+          pip install -r requirements.txt
           pip install mypy
 
       - name: Run mypy Static Type Checking
