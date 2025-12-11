@@ -45,7 +45,7 @@ def compare_s1s2_methods(
     n_theta = 100  # Polar angle samples
     theta_max = np.arctan(ops.mirror_radius / ops.h)
     theta_values = np.linspace(np.pi / 2 - theta_max, np.pi / 2 + theta_max, n_theta)
-    size_parameter = np.pi / ops.wavelength * diameter
+    size_parameter = np.pi / ops.laser_wavelength * diameter
 
     # Compute S1 and S2 using custom Mie implementation
     s1 = np.zeros_like(theta_values, dtype=complex)

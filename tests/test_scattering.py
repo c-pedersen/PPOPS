@@ -11,11 +11,17 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 # 2. Get the parent directory of 'tests/' (which is the PPOPS project root)
 project_root = os.path.join(current_dir, "..")
 
-# 3. Add the PPOPS project root to the very start of the search path (sys.path)
-sys.path.insert(0, os.path.abspath(project_root))
+# 3. Add the src directory to the very start of the search path (sys.path)
+# This allows Python to correctly resolve 'from ppops.geometry...'
+src_dir = os.path.join(project_root, "src")
+sys.path.insert(0, os.path.abspath(src_dir))
 
+print("\n--- Current Python Search Paths (sys.path) ---")
+for p in sys.path:
+    print(p)
+print("------------------------------------------")
 # The error label below (E402) suppresses the ruff error that the module import is not at the top of the file
-from src import ppops  # noqa: E402
+import ppops  # noqa: E402
 
 
 @pytest.mark.slow
