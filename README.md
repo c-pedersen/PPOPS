@@ -1,9 +1,11 @@
 # PPOPS
+
 Performance Prediction for Optical Particle Spectrometer
 
 [![codecov](https://codecov.io/gh/c-pedersen/ppops/branch/main/graph/badge.svg?ts=20251106)](https://codecov.io/gh/c-pedersen/ppops)
 [![CI](https://github.com/c-pedersen/PPOPS/actions/workflows/ci.yml/badge.svg)](https://github.com/c-pedersen/PPOPS/actions/workflows/ci.yml)
-# POPS Scattering Simulation and Calibration
+
+## POPS Scattering Simulation and Calibration
 
 This repository implements a Mie scattering model and Optical Particle
 Spectrometer (OPS) geometry simulation to calculate the truncated
@@ -12,9 +14,13 @@ POPS mirror-and the resulting signal and noise current.
 
 ## Overview
 
-This package integrates the Mie scattering intensity over the
-solid-angle acceptance of the OPS, based on the geometry of its optical
-collection system.
+This repository implements a Mie scattering model and Optical Particle
+Spectrometer (OPS) geometry simulation to calculate the truncated
+scattering cross section—the portion of scattered light collected by the
+POPS mirror-and the resulting signal and noise current. To do this, the
+package integrates the Mie scattering intensity over the solid-angle
+acceptance of the OPS, based on the geometry of its optical collection
+system.
 
 The workflow includes:
 
@@ -41,11 +47,21 @@ This package make several assumptions:
 
 ## Installation
 
-XX
+Clone the repository and install dependencies:
+
+git clone https://github.com/yourusername/PPOPS.git
+cd PPOPS
+pip install -r requirements.txt
 
 ## Usage
 
-XX
+```Python
+import ppops
+
+ops = ppops.OpticalParticleSpectrometer()
+
+ops.estimate_signal_noise(diameters = [0.1, 0.5, 1.0], ior = 1.5+0.001j)
+```
 
 ## References
 
