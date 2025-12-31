@@ -12,11 +12,13 @@ Functions:
     ptz2r_sc(phi, theta, y0): Computes mirror intersection geometry, maximum
     azimuthal angle, and polarization weights.
 """
+from __future__ import annotations
+from typing import TYPE_CHECKING
 
 import numpy as np
 
-from ppops.OPS import OpticalParticleSpectrometer
-
+if TYPE_CHECKING:
+    from .OPS import OpticalParticleSpectrometer
 
 def ptz2r_sc(
     ops: OpticalParticleSpectrometer,

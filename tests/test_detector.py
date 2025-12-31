@@ -1,5 +1,3 @@
-# ruff: noqa: E402
-
 import pytest
 import numpy as np
 import math
@@ -7,24 +5,13 @@ import sys
 import os
 
 # Workaround to resolve path issues/being unable to see src directory
-# 1. Get the directory where this file (conftest.py) is located (tests/)
 current_dir = os.path.dirname(os.path.abspath(__file__))
-
-# 2. Get the parent directory of 'tests/' (which is the PPOPS project root)
 project_root = os.path.join(current_dir, "..")
-
-# 3. Add the src directory to the very start of the search path (sys.path)
-# This allows Python to correctly resolve 'from ppops.geometry...'
 src_dir = os.path.join(project_root, "src")
 sys.path.insert(0, os.path.abspath(src_dir))
 
-print("\n--- Current Python Search Paths (sys.path) ---")
-for p in sys.path:
-    print(p)
-print("------------------------------------------")
-
-# The error label at the start of the file (E402) suppresses the ruff error that the module import is not at the top of the file
-from ppops.detector import (
+import ppops # noqa: E402
+from ppops.detector import ( # noqa: E402
     laser_power_density,
     estimate_signal_noise,
     ELEMENTARY_CHARGE,
@@ -33,8 +20,6 @@ from ppops.detector import (
     BANDWIDTH,
     TIA60_INPUT_CURRENT_NOISE,
 )
-
-# TESTS
 
 
 def test_laser_power_density_calculation():
@@ -108,12 +93,14 @@ def test_estimate_signal_noise_scalar():
     Verifies the physics formulas are implemented correctly.
     """
     csca = 1.0  # um^2
-    power_mw = 100.0
+    power = 100.0
+
+    ops = ppops.OpticalParticleSpectrometer(laser_power = power)
 
     # Get density to manually calculate expectation
     # We use default beam dimensions from the function signature in detector.py
     # (3e-3, 1e-3)
-    density = laser_power_density(power_mw, 3e-3, 1e-3)
+    density = laser_power_density(power, 3e-3, 1e-3)
 
     # Manual Signal Calculation
     expected_signal = csca * density * H10720_110_ANODE_RADIANT_SENSITIVITY
@@ -127,7 +114,7 @@ def test_estimate_signal_noise_scalar():
         (signal_noise_sq + dark_noise_sq + preamp_noise_sq) * BANDWIDTH
     )
 
-    signal, noise = estimate_signal_noise(csca, power_mw)
+    signal, noise = estimate_signal_noise(ops, csca)
 
     assert signal == pytest.approx(expected_signal)
     assert noise == pytest.approx(expected_total_noise)
@@ -138,9 +125,11 @@ def test_estimate_signal_noise_vectorized():
     Test that the function handles numpy arrays for csca correctly.
     """
     csca_array = np.array([1.0, 2.0, 3.0])
-    power_mw = 100.0
+    power = 100.0
 
-    signal, noise = estimate_signal_noise(csca_array, power_mw)
+    ops = ppops.OpticalParticleSpectrometer(laser_power = power)
+
+    signal, noise = estimate_signal_noise(ops, csca_array)
 
     # Check types
     assert isinstance(signal, np.ndarray)
@@ -165,7 +154,17 @@ def test_estimate_signal_noise_custom_parameters():
     csca = 1.0
     power = 100.0
 
-    # Defaults
-    sig_def, noise_def = estimate_signal_noise(csca, power)
+    ops = ppops.OpticalParticleSpectrometer(laser_power = power)
 
-    # Custom: Zero Dark Current, Zero Preamp noise, Reduced
+    # Defaults
+    sig_def, noise_def = estimate_signal_noise(ops, csca)
+
+    # Custom: Zero Dark Current, Zero Preamp noise
+    ops = ppops.OpticalParticleSpectrometer(laser_power = power, dark_current=0.0, input_current_noise=0.0,)
+    sig_custom, noise_custom = estimate_signal_noise(ops, csca)
+
+    # Signal should be identical
+    assert sig_custom == pytest.approx(sig_def)
+
+    # Noise should be lower due to zero dark current and preamp noise
+    assert noise_custom < noise_def

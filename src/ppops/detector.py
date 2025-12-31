@@ -29,6 +29,8 @@ Citations:
     - Hamamatsu Photonics. H10720 Series Photomultiplier Tube Datasheet. https://www.hamamatsu.com/content/dam/hamamatsu-photonics/sites/documents/99_SALES_LIBRARY/etd/H10720_H10721_TPMO1062E.pdf
 
 """
+from __future__ import annotations
+from typing import TYPE_CHECKING
 
 from warnings import warn
 import math
@@ -36,7 +38,8 @@ import math
 import numpy as np
 from numpy.typing import NDArray
 
-from ppops.OPS import OpticalParticleSpectrometer
+if TYPE_CHECKING:
+    from .OPS import OpticalParticleSpectrometer
 
 # Physical constants
 ELEMENTARY_CHARGE = 1.602176634e-19  # C
