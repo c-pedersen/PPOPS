@@ -25,7 +25,7 @@ def test_basic_run_and_output_structure():
     theta = np.array([np.pi / 2])
     ops = OpticalParticleSpectrometer()
 
-    result = ptz2r_sc(ops=ops, phi=phi,theta=theta)
+    result = ptz2r_sc(ops=ops, phi=phi, theta=theta)
 
     # 1. Check if the correct number of results (7) is returned
     assert len(result) == 7, "Function should return a tuple of 7 elements."
@@ -55,10 +55,10 @@ def test_polarization_conservation():
     # Test a few different geometries
     phi = np.array([0.0, np.pi / 4, 0.8])
     theta = np.array([np.pi / 4, np.pi / 2, 5.0])
-    y0_values = [0.8, 1.2, -3.0]
+    aerosol_mirror_separation_values = [0.8, 1.2, -3.0]
 
-    for y0 in y0_values:
-        ops.y0 = y0
+    for aerosol_mirror_separation in aerosol_mirror_separation_values:
+        ops.aerosol_mirror_separation = aerosol_mirror_separation
         _, _, _, _, ws, wp, _ = ptz2r_sc(ops=ops, phi=phi, theta=theta)
 
         # Check that ws + wp equals 1.0 within tolerance

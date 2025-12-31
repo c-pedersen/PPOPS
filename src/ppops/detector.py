@@ -29,6 +29,7 @@ Citations:
     - Hamamatsu Photonics. H10720 Series Photomultiplier Tube Datasheet. https://www.hamamatsu.com/content/dam/hamamatsu-photonics/sites/documents/99_SALES_LIBRARY/etd/H10720_H10721_TPMO1062E.pdf
 
 """
+
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
@@ -127,12 +128,16 @@ def estimate_signal_noise(
     """
 
     signal_current = (
-        truncated_csca * laser_power_density(ops.laser_power) * ops.anode_radiant_sensitivity
+        truncated_csca
+        * laser_power_density(ops.laser_power)
+        * ops.anode_radiant_sensitivity
     )  # A
 
     signal_noise = 2 * ELEMENTARY_CHARGE * signal_current  # C^2 s^-1
     dark_noise = 2 * ELEMENTARY_CHARGE * ops.dark_current  # C^2 s^-1
     preamp_noise = ops.input_current_noise**2  # C^2 s^-1
-    total_noise = np.sqrt((signal_noise + dark_noise + preamp_noise) * ops.bandwidth)  # A
+    total_noise = np.sqrt(
+        (signal_noise + dark_noise + preamp_noise) * ops.bandwidth
+    )  # A
 
     return signal_current, total_noise

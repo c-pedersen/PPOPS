@@ -9,9 +9,11 @@ It also calculates polarization weighting factors (s- and p-components) for
 the instrument’s optical collection efficiency.
 
 Functions:
-    ptz2r_sc(phi, theta, y0): Computes mirror intersection geometry, maximum
-    azimuthal angle, and polarization weights.
+    ptz2r_sc(OpticalParticleSpectrometer, phi, theta): Computes mirror
+    intersection geometry, maximum azimuthal angle, and polarization
+    weights.
 """
+
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
@@ -19,6 +21,7 @@ import numpy as np
 
 if TYPE_CHECKING:
     from .OPS import OpticalParticleSpectrometer
+
 
 def ptz2r_sc(
     ops: OpticalParticleSpectrometer,
@@ -75,8 +78,8 @@ def ptz2r_sc(
     ay = np.sqrt(1 - alpha**2) * sin_theta
     az = mu
     a = ax**2 + ay**2 + az**2
-    b = 2 * ops.y0 * ay
-    c = ops.y0**2 - ops.mirror_radius_of_curvature**2
+    b = 2 * ops.aerosol_mirror_separation * ay
+    c = ops.aerosol_mirror_separation**2 - ops.mirror_radius_of_curvature**2
 
     # Quadratic solutions
     discriminant = np.sqrt(b**2 - 4 * a * c)
@@ -99,7 +102,7 @@ def ptz2r_sc(
 
     # Compute mirror orientation and obliquity factor
     x_norm = x / np.linalg.norm(x, axis=-1, keepdims=True)
-    s_norm = x - np.array([0, -ops.y0, 0])
+    s_norm = x - np.array([0, -ops.aerosol_mirror_separation, 0])
     s_norm = s_norm / np.linalg.norm(s_norm, axis=-1, keepdims=True)
 
     # Obliquity factor: dot product along last axis
