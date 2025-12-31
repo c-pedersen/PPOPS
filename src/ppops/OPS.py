@@ -34,6 +34,10 @@ class OpticalParticleSpectrometer:
         mirror_radius: float = 12.5,
         mirror_radius_of_curvature: float = 20.0,
         aerosol_mirror_separation: float = 14.2290,
+        anode_radiant_sensitivity = detector.H10720_110_ANODE_RADIANT_SENSITIVITY,
+        dark_current = detector.H10720_110_DARK_CURRENT,
+        bandwidth = detector.BANDWIDTH,
+        input_current_noise = detector.TIA60_INPUT_CURRENT_NOISE,
     ):
         """Initialize the OPS instrument parameters.
 
@@ -41,19 +45,29 @@ class OpticalParticleSpectrometer:
         ----------
         laser_wavelength : float
             Wavelength of the incident light in micrometers.
-        laser_power : float
+        laser_power : float, default 70
             Laser power in milliwatts.
-        laser_polarization : str
+        laser_polarization : str, default 'horizontal'
             Polarization state of the incident laser light. Options are
             'unpolarized', 'horizontal', or 'vertical'. Default is
             'horizontal'.
-        mirror_radius : float
+        mirror_radius : float, default 12.5
             Radius of the spherical mirror in millimeters.
-        mirror_radius_of_curvature : float
+        mirror_radius_of_curvature : float, default 20.0
             Radius of curvature of the spherical mirror in millimeters.
-        aerosol_mirror_separation : float
+        aerosol_mirror_separation : float, default 14.2290
             Separation between the aerosol and the center of the mirror
             in millimeters.
+        anode_radiant_sensitivity : float, default 2.2e5 (see detector.py)
+            Anode radiant sensitivity of the detector in Amperes per 
+            Watt.
+        dark_current : float, default 1e-9 (see detector.py)
+            Dark current of the detector in Amperes.
+        bandwidth : float, default 4e6 (see detector.py)
+            Bandwidth of the detector in Hertz.
+        input_current_noise : float, default 4.8e-12 (see detector.py)
+            Input current noise of the detector in Amperes per square 
+            root Hertz.
         """
 
         self.laser_wavelength = laser_wavelength
@@ -67,6 +81,11 @@ class OpticalParticleSpectrometer:
         self.h = aerosol_mirror_separation - mirror_depth(
             mirror_radius=mirror_radius, radius_of_curvature=mirror_radius_of_curvature
         )
+        self.anode_radiant_sensitivity = anode_radiant_sensitivity
+        self.dark_current = dark_current
+        self.bandwidth = bandwidth
+        self.input_current_noise = input_current_noise
+
 
     def truncated_scattering_cross_section(
         self,
@@ -140,13 +159,9 @@ class OpticalParticleSpectrometer:
 
         # Single vectorized call for ALL geometry calculations
         _, _, _, _, ws, wp, _ = ptz2r_sc(
+            ops=self,
             phi=all_phis,
             theta=all_thetas,
-            mirror_radius=self.mirror_radius,
-            mirror_radius_of_curvature=self.mirror_radius_of_curvature,
-            y0=self.y0,
-            h=self.h,
-            laser_polarization=self.laser_polarization,
         )
 
         # Compute integrand for all points
@@ -188,10 +203,10 @@ class OpticalParticleSpectrometer:
 
         Returns
         -------
-        tuple[float, float]
-            Tuple containing:
-            - signal : float units of Amperes (A)
-            - noise : float units of Amperes (A)
+        signal : float or np.ndarray
+            Estimated signal amplitude in units of Amperes (A).
+        noise : float or np.ndarray
+            Estimated noise amplitude in units of Amperes (A).
         """
         try:
             diameters = np.asarray(diameters, dtype=float)
@@ -207,6 +222,6 @@ class OpticalParticleSpectrometer:
                 self.truncated_scattering_cross_section(ior, diameter),
             )
 
-        signal, noise = detector.estimate_signal_noise(trunc_csca, self.laser_power)
+        signal, noise = detector.estimate_signal_noise(self, trunc_csca)
 
         return signal, noise

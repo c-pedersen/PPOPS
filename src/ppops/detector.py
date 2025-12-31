@@ -36,6 +36,8 @@ import math
 import numpy as np
 from numpy.typing import NDArray
 
+from ppops.OPS import OpticalParticleSpectrometer
+
 # Physical constants
 ELEMENTARY_CHARGE = 1.602176634e-19  # C
 
@@ -98,12 +100,8 @@ def laser_power_density(
 
 
 def estimate_signal_noise(
+    ops: OpticalParticleSpectrometer,
     truncated_csca: float | NDArray[np.float64],
-    laser_power: float,
-    anode_radiant_sensitivity: float = H10720_110_ANODE_RADIANT_SENSITIVITY,
-    dark_current: float = H10720_110_DARK_CURRENT,
-    bandwidth: float = BANDWIDTH,
-    input_current_noise: float = TIA60_INPUT_CURRENT_NOISE,
 ) -> tuple[float | NDArray[np.float64], float | NDArray[np.float64]]:
     """Return signal and noise estimates.
 
@@ -112,34 +110,26 @@ def estimate_signal_noise(
 
     Parameters
     ----------
+    ops : OpticalParticleSpectrometer
+        Instance of the OpticalParticleSpectrometer class.
     truncated_csca : float or np.ndarray
         Truncated scattering cross section in units of µm².
-    laser_power : float
-        Laser power in mW.
-    anode_radiant_sensitivity : float, optional
-        Anode radiant sensitivity in A/W. Default is 2.2e5 A/W.
-    dark_current : float, optional
-        Dark current noise in A. Default is 1e-9 A.
-    bandwidth : float, optional
-        Bandwidth in Hz. Default is 4e6 Hz.
-    input_current_noise : float, optional
-        Preamplifier input current noise in A/√Hz. Default is 4.8e-12 A/√Hz.
 
     Returns
     -------
-    signal_current : float or np.ndarray
+    float or np.ndarray
         Estimated signal current (A).
-    noise : float or np.ndarray
+    float or np.ndarray
         Estimated noise (A).
     """
 
     signal_current = (
-        truncated_csca * laser_power_density(laser_power) * anode_radiant_sensitivity
+        truncated_csca * laser_power_density(ops.laser_power) * ops.anode_radiant_sensitivity
     )  # A
 
     signal_noise = 2 * ELEMENTARY_CHARGE * signal_current  # C^2 s^-1
-    dark_noise = 2 * ELEMENTARY_CHARGE * dark_current  # C^2 s^-1
-    preamp_noise = input_current_noise**2  # C^2 s^-1
-    total_noise = np.sqrt((signal_noise + dark_noise + preamp_noise) * bandwidth)  # A
+    dark_noise = 2 * ELEMENTARY_CHARGE * ops.dark_current  # C^2 s^-1
+    preamp_noise = ops.input_current_noise**2  # C^2 s^-1
+    total_noise = np.sqrt((signal_noise + dark_noise + preamp_noise) * ops.bandwidth)  # A
 
     return signal_current, total_noise
