@@ -22,15 +22,18 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Scientific/Engineering :: Physics",
 ]
 keywords = ["OPS", "OPC", "POPS", "Optical Particle Spectrometer"]
 
 dependencies = [
-    "numpy>=1.18.0",
-    "pandas>=1.0.0", 
-    "scipy>=1.15.0",
-    "miepython>=3.0.1",
+    "numpy>=2.0.0",
+    "pandas>=2.0.0", 
+    "scipy>=1.0.0",
+    "miepython>=3.0.0",
 ]
 
 [project.optional-dependencies]
@@ -40,7 +43,7 @@ test = [
 ]
 docs = [
     "sphinx>=8.0.0",
-    "sphinx-mdinclude>=0.5.0",
+    "sphinx-mdinclude",
     "sphinx-autodoc-typehints>=1.25.0",
     "sphinx-autoapi>=3.0.0",
     "nbsphinx>=0.9.0",
@@ -48,7 +51,6 @@ docs = [
     "ipykernel>=7.0.0",
 ]
 dev = [
-    "build>=1.0.0",
     "twine>=6.0.0",
     "ruff",
     "mypy",
@@ -58,7 +60,7 @@ validation = [
     "matplotlib>=3.0.0",
 ]
 profiling = [
-    "snakeviz",
+    "snakeviz>2.0.0",
 ]
 
 [project.urls]
