@@ -40,10 +40,11 @@ current based on detector specifications.
 This package make several assumptions:
 
 1. Particles are perfectly spherical.
-2. All scattered light incident on the collection mirror is detected.
-3. The only noise sources are signal noise, dark noise, and preamp noise
+2. Scattering is elastic.
+3. All scattered light incident on the collection mirror is detected.
+4. The only noise sources are signal noise, dark noise, and preamp noise
 (i.e., we neglect stray scattering).
-4. The detector is shot noise limited.
+5. The detector is shot noise limited.
 
 ## Installation
 
