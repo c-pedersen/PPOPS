@@ -23,12 +23,7 @@ def test_basic_run_and_output_structure():
     # Typical inputs: 90-degree scattering, center offset 0
     phi = np.array([np.pi / 4])
     theta = np.array([np.pi / 2])
-    ops = OpticalParticleSpectrometer(
-        aerosol_mirror_separation = 7.68 + 2.159,
-        mirror_radius = 12.5,
-        mirror_radius_of_curvature = 20.0,
-        laser_polarization = "horizontal",
-    )
+    ops = OpticalParticleSpectrometer()
 
     result = ptz2r_sc(ops=ops, phi=phi,theta=theta)
 
@@ -55,12 +50,7 @@ def test_polarization_conservation():
     Tests the fundamental physics sanity check:
     The s-polarization (ws) and p-polarization (wp) weights must sum to 1.0.
     """
-    ops = OpticalParticleSpectrometer(
-        aerosol_mirror_separation = 7.68 + 2.159,
-        mirror_radius = 12.5,
-        mirror_radius_of_curvature = 20.0,
-        laser_polarization = "horizontal",
-    )
+    ops = OpticalParticleSpectrometer()
 
     # Test a few different geometries
     phi = np.array([0.0, np.pi / 4, 0.8])
@@ -92,12 +82,7 @@ def test_degenerate_forward_scattering():
     """
     phi = np.array([0.5])  # Arbitrary azimuthal angle
     theta = np.array([0.0])  # Forward scattering
-    ops = OpticalParticleSpectrometer(
-        aerosol_mirror_separation = 7.68 + 2.159,
-        mirror_radius = 12.5,
-        mirror_radius_of_curvature = 20.0,
-        laser_polarization = "horizontal",
-    )
+    ops = OpticalParticleSpectrometer()
 
     _, _, _, _, ws, wp, _ = ptz2r_sc(ops=ops, phi=phi, theta=theta)
 
@@ -140,12 +125,7 @@ def test_pure_s_polarization():
     """
     phi = np.array([np.pi / 2])
     theta = np.array([np.pi / 2])
-    ops = OpticalParticleSpectrometer(
-        aerosol_mirror_separation = 7.68 + 2.159,
-        mirror_radius = 12.5,
-        mirror_radius_of_curvature = 20.0,
-        laser_polarization = "horizontal",
-    )
+    ops = OpticalParticleSpectrometer()
 
     _, _, _, _, ws, wp, _ = ptz2r_sc(ops=ops, phi=phi, theta=theta)
 
