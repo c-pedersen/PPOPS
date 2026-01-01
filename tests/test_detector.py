@@ -10,8 +10,8 @@ project_root = os.path.join(current_dir, "..")
 src_dir = os.path.join(project_root, "src")
 sys.path.insert(0, os.path.abspath(src_dir))
 
-import ppops # noqa: E402
-from ppops.detector import ( # noqa: E402
+import ppops  # noqa: E402
+from ppops.detector import (  # noqa: E402
     laser_power_density,
     estimate_signal_noise,
     ELEMENTARY_CHARGE,
@@ -95,7 +95,7 @@ def test_estimate_signal_noise_scalar():
     csca = 1.0  # um^2
     power = 100.0
 
-    ops = ppops.OpticalParticleSpectrometer(laser_power = power)
+    ops = ppops.OpticalParticleSpectrometer(laser_power=power)
 
     # Get density to manually calculate expectation
     # We use default beam dimensions from the function signature in detector.py
@@ -127,7 +127,7 @@ def test_estimate_signal_noise_vectorized():
     csca_array = np.array([1.0, 2.0, 3.0])
     power = 100.0
 
-    ops = ppops.OpticalParticleSpectrometer(laser_power = power)
+    ops = ppops.OpticalParticleSpectrometer(laser_power=power)
 
     signal, noise = estimate_signal_noise(ops, csca_array)
 
@@ -154,13 +154,17 @@ def test_estimate_signal_noise_custom_parameters():
     csca = 1.0
     power = 100.0
 
-    ops = ppops.OpticalParticleSpectrometer(laser_power = power)
+    ops = ppops.OpticalParticleSpectrometer(laser_power=power)
 
     # Defaults
     sig_def, noise_def = estimate_signal_noise(ops, csca)
 
     # Custom: Zero Dark Current, Zero Preamp noise
-    ops = ppops.OpticalParticleSpectrometer(laser_power = power, dark_current=0.0, input_current_noise=0.0,)
+    ops = ppops.OpticalParticleSpectrometer(
+        laser_power=power,
+        dark_current=0.0,
+        input_current_noise=0.0,
+    )
     sig_custom, noise_custom = estimate_signal_noise(ops, csca)
 
     # Signal should be identical

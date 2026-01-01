@@ -34,10 +34,10 @@ class OpticalParticleSpectrometer:
         mirror_radius: float = 12.5,
         mirror_radius_of_curvature: float = 20.0,
         aerosol_mirror_separation: float = 14.2290,
-        anode_radiant_sensitivity = detector.H10720_110_ANODE_RADIANT_SENSITIVITY,
-        dark_current = detector.H10720_110_DARK_CURRENT,
-        bandwidth = detector.BANDWIDTH,
-        input_current_noise = detector.TIA60_INPUT_CURRENT_NOISE,
+        anode_radiant_sensitivity=detector.H10720_110_ANODE_RADIANT_SENSITIVITY,
+        dark_current=detector.H10720_110_DARK_CURRENT,
+        bandwidth=detector.BANDWIDTH,
+        input_current_noise=detector.TIA60_INPUT_CURRENT_NOISE,
     ):
         """Initialize the OPS instrument parameters.
 
@@ -59,14 +59,14 @@ class OpticalParticleSpectrometer:
             Separation between the aerosol and the center of the mirror
             in millimeters.
         anode_radiant_sensitivity : float, default 2.2e5 (see detector.py)
-            Anode radiant sensitivity of the detector in Amperes per 
+            Anode radiant sensitivity of the detector in Amperes per
             Watt.
         dark_current : float, default 1e-9 (see detector.py)
             Dark current of the detector in Amperes.
         bandwidth : float, default 4e6 (see detector.py)
             Bandwidth of the detector in Hertz.
         input_current_noise : float, default 4.8e-12 (see detector.py)
-            Input current noise of the detector in Amperes per square 
+            Input current noise of the detector in Amperes per square
             root Hertz.
         """
 
@@ -85,7 +85,6 @@ class OpticalParticleSpectrometer:
         self.dark_current = dark_current
         self.bandwidth = bandwidth
         self.input_current_noise = input_current_noise
-
 
     def truncated_scattering_cross_section(
         self,
