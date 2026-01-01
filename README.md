@@ -5,22 +5,17 @@ Performance Prediction for Optical Particle Spectrometer
 [![codecov](https://codecov.io/gh/c-pedersen/ppops/branch/main/graph/badge.svg?ts=20251106)](https://codecov.io/gh/c-pedersen/ppops)
 [![CI](https://github.com/c-pedersen/PPOPS/actions/workflows/ci.yml/badge.svg)](https://github.com/c-pedersen/PPOPS/actions/workflows/ci.yml)
 
-## POPS Scattering Simulation and Calibration
-
-This repository implements a Mie scattering model and Optical Particle
-Spectrometer (OPS) geometry simulation to calculate the truncated
-scattering cross section—the portion of scattered light collected by the
-POPS mirror-and the resulting signal and noise current.
-
 ## Overview
 
 This repository implements a Mie scattering model and Optical Particle
 Spectrometer (OPS) geometry simulation to calculate the truncated
 scattering cross section—the portion of scattered light collected by the
-POPS mirror-and the resulting signal and noise current. To do this, the
+OPS mirror-and the resulting signal and noise current. To do this, the
 package integrates the Mie scattering intensity over the solid-angle
 acceptance of the OPS, based on the geometry of its optical collection
-system.
+system. The default instrument design and specifications (e.g., mirror
+geometry, photomultiplier tube specifications) are taken from Gao et
+al., AS&T, 2016.
 
 The workflow includes:
 
@@ -50,7 +45,7 @@ This package make several assumptions:
 
 Clone the repository and install dependencies:
 
-git clone https://github.com/yourusername/PPOPS.git
+git clone <https://github.com/yourusername/PPOPS.git>
 cd PPOPS
 pip install -r requirements.txt
 
@@ -71,7 +66,7 @@ Richardson, M.S., Schwarz, J.P., Perring, A.E., Thornberry, T.D.,
 Rollins, A.W., Markovic, M.Z., Bates, T.S., Johnson, J.E., Fahey, D.W.,
 2016. A light-weight, high-sensitivity particle spectrometer for PM2.5
 2017. aerosol measurements. Aerosol Science and Technology 50, 88–99.
-2018. https://doi.org/10.1080/02786826.2015.1131809
+2018. <https://doi.org/10.1080/02786826.2015.1131809>
 
 miepython: 10.5281/zenodo.7949263
 
@@ -79,7 +74,7 @@ miepython: 10.5281/zenodo.7949263
 
 This repository is intended as a transparent, well-documented
 implementation of Mie scattering and optical geometry for OPS
-calibration and analysis.  
+performance prediction and analysis.
 
 ## License
 
