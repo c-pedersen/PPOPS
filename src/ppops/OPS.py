@@ -14,6 +14,7 @@ References:
     - C. Mätzler (2002), Mie scattering implementations
 """
 
+from warnings import warn
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
 import scipy
@@ -70,6 +71,47 @@ class OpticalParticleSpectrometer:
             root Hertz.
         """
 
+        # Ensure inputs are valid
+        if np.any(laser_wavelength <= 0):
+            raise ValueError("All laser wavelengths must be positive.")
+        if np.any(laser_power <= 0):
+            raise ValueError("All laser powers must be positive.")
+        if laser_polarization not in ["unpolarized", "horizontal", "vertical"]:
+            raise ValueError(
+                "laser_polarization must be 'unpolarized', 'horizontal', or 'vertical'."
+            )
+        if mirror_radius <= 0 or mirror_radius_of_curvature <= 0:
+            raise ValueError("Mirror radius and radius of curvature must be positive.")
+        if aerosol_mirror_separation <= 0:
+            raise ValueError("Aerosol-mirror separation must be positive.")
+
+        # Ensure variables are close to expected mangitude
+        if np.any(laser_wavelength > 2) or np.any(laser_wavelength < 0.2):
+            warn(
+                "Laser wavelength outside of expected range. "
+                "Verify laser wavelength is in micrometers."
+            )
+        if np.any(laser_power > 1000) or np.any(laser_power < 1):
+            warn(
+                "Laser power outside of expected range. "
+                "Verify laser power is in milliwatts."
+            )
+        if mirror_radius > 100 or mirror_radius < 1:
+            warn(
+                "Mirror radius outside of expected range. "
+                "Verify mirror radius is in millimeters."
+            )
+        if mirror_radius_of_curvature > 200 or mirror_radius_of_curvature < 5:
+            warn(
+                "Mirror radius of curvature outside of expected range. "
+                "Verify radius of curvature is in millimeters."
+            )
+        if aerosol_mirror_separation > 100 or aerosol_mirror_separation < 5:
+            warn(
+                "Aerosol-mirror separation outside of expected range. "
+                "Verify separation is in millimeters."
+            )
+
         self.laser_wavelength = laser_wavelength
         self.laser_power = laser_power
         self.laser_polarization = laser_polarization
@@ -116,6 +158,16 @@ class OpticalParticleSpectrometer:
         np.ndarray
             Truncated scattering cross-section in square micrometers.
         """
+        # Validate inputs
+        if np.any(np.imag(ior) < 0):
+            raise ValueError(
+                "Imaginary part of refractive indices must be non-negative."
+            )
+        if diameter < 0.001 or diameter > 10:
+            warn(
+                "Diameter outside of expected range. Verify diameter is in micrometers."
+            )
+
         if not isinstance(n_theta, int) or n_theta <= 0:
             raise ValueError("n_theta must be a positive integer.")
         if not isinstance(n_phi, int) or n_phi <= 0:
