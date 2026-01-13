@@ -58,16 +58,28 @@ TIA60_INPUT_CURRENT_NOISE = 4.8e-12  # A/sqrt(Hz)
 
 def laser_power_density(
     laser_power: float,
-    beam_major: float = 3e-3,
-    beam_minor: float = 1e-3,
+    beam_major: float = 6e-3,
+    beam_minor: float = 5.4e-5,
 ) -> float:
     """Return the laser power density at the aerosol stream.
 
-    The assumed beam geometry is an oval. Note: the beam dimensions are
-    taken from Gao et al. 2016 at the laser assembly exit, not at the
-    aerosol stream. This function assumes the beam does not diverge
-    significantly over this optical path which may or may not be a valid
-    assumption.
+    The inital beam dimensions are taken from Gao et al. 2016 and the
+    beam waist at the aerosol stream is estimated below assuming a
+    Gaussian beam profile. The laser power density is then calculated as
+    the laser power divided by the beam area at the aerosol stream
+    assuming a uniform power distribution.    
+
+    Horizontal beam waist at aerosol stream:    
+    w_0_horizontal = 2M² * λ * L / (π * w_initial) = 0.054 mm
+    where λ = 405 nm, L = 75 mm, w_initial_horizontal = 1 mm, M² = 1.4 
+    (assumed).
+
+    Vertical beam waist at aerosol stream:
+    spot_size = 2M² * λ * L / (π * w_initial)
+    where L = 25 mm, w_initial_vertical = 3 mm.
+    DOF = 2 * π * (spot_size / 2)² / (M² * λ) = 0.1 mm
+    w_0_vertical = spot_size * sqrt(
+        1 + (distance_from_lens - L)² / (DOF/2)²) = 6 mm
 
     Parameters
     ----------
@@ -75,15 +87,24 @@ def laser_power_density(
         Laser power in mW.
     beam_major : float, optional
         Length of major axis of the oval laser beam at the aerosol
-        stream in meters. Default is 3e-3.
+        stream in meters. Default is 6e-3.
     beam_minor : float, optional
         Length of minor axis of the oval laser beam at the aerosol
-        stream in meters. Default is 1e-3.
-
+        stream in meters. Default is 5.4e-5.
     Returns
     -------
     float
-        Optical power density (W/m^2).
+        Optical power density (W/µm^2).
+
+    References
+    ----------
+    Gao, R.S., et al. 2016. A light-weight, high-sensitivity particle
+    spectrometer for PM2.5 aerosol measurements. Aerosol Science and
+    Technology 50, 88-99. https://doi.org/10.1080/02786826.2015.1131809
+
+    Laser spot size and beam waist calculator and formulas. Gentec. 
+    (n.d.). 
+    https://www.gentec-eo.com/laser-calculators/beam-waist-spot-size 
     """
 
     if beam_major <= 0 or beam_minor <= 0:
@@ -93,10 +114,6 @@ def laser_power_density(
             "Beam dimensions in meters seem unrealistic. "
             "Please verify the input values."
         )
-    if laser_power < 0:
-        raise ValueError("Laser power cannot be negative.")
-    if laser_power > 1000 or laser_power <= 10:
-        warn("Laser power in mW seems unrealistic. Please verify the input value.")
 
     beam_area = math.pi * (beam_major / 2 * 1e6) * (beam_minor / 2 * 1e6)  # µm^2
 
@@ -128,9 +145,9 @@ def estimate_signal_noise(
     """
 
     signal_current = (
-        truncated_csca
-        * laser_power_density(ops.laser_power)
-        * ops.anode_radiant_sensitivity
+        truncated_csca # µm²
+        * laser_power_density(ops.laser_power) # W/µm²
+        * ops.anode_radiant_sensitivity # A/W
     )  # A
 
     signal_noise = 2 * ELEMENTARY_CHARGE * signal_current  # C^2 s^-1
