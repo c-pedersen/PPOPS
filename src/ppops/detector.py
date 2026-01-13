@@ -58,8 +58,8 @@ TIA60_INPUT_CURRENT_NOISE = 4.8e-12  # A/sqrt(Hz)
 
 def laser_power_density(
     laser_power: float,
-    beam_major: float = 6e-3,
-    beam_minor: float = 5.4e-5,
+    beam_major: float = 6,
+    beam_minor: float = 0.054,
 ) -> float:
     """Return the laser power density at the aerosol stream.
 
@@ -70,15 +70,15 @@ def laser_power_density(
     assuming a uniform power distribution.    
 
     Horizontal beam waist at aerosol stream:    
-    w_0_horizontal = 2M² * λ * L / (π * w_initial) = 0.054 mm
+    spot_diameter = 4M² * λ * L / (π * w_initial) = 0.054 mm
     where λ = 405 nm, L = 75 mm, w_initial_horizontal = 1 mm, M² = 1.4 
     (assumed).
 
     Vertical beam waist at aerosol stream:
-    spot_size = 2M² * λ * L / (π * w_initial)
+    spot_diameter = 2M² * λ * L / (π * w_initial)
     where L = 25 mm, w_initial_vertical = 3 mm.
-    DOF = 2 * π * (spot_size / 2)² / (M² * λ) = 0.1 mm
-    w_0_vertical = spot_size * sqrt(
+    DOF = 2 * π * (spot_diameter / 2)² / (M² * λ)
+    beam_diameter = spot_diameter * sqrt(
         1 + (distance_from_lens - L)² / (DOF/2)²) = 6 mm
 
     Parameters
@@ -87,10 +87,10 @@ def laser_power_density(
         Laser power in mW.
     beam_major : float, optional
         Length of major axis of the oval laser beam at the aerosol
-        stream in meters. Default is 6e-3.
+        stream in millimeters. Default is 6.
     beam_minor : float, optional
         Length of minor axis of the oval laser beam at the aerosol
-        stream in meters. Default is 5.4e-5.
+        stream in millimeters. Default is 0.054.
     Returns
     -------
     float
@@ -109,14 +109,13 @@ def laser_power_density(
 
     if beam_major <= 0 or beam_minor <= 0:
         raise ValueError("Beam major and minor axes must be positive values.")
-    if beam_major > 1e-2 or beam_minor > 1e-2 or beam_major < 1e-5 or beam_minor < 1e-5:
+    if beam_major > 10 or beam_minor > 10 or beam_major < 1e-3 or beam_minor < 1e-3:
         warn(
-            "Beam dimensions in meters seem unrealistic. "
+            "Beam dimensions in mm seem unrealistic. "
             "Please verify the input values."
         )
 
-    beam_area = math.pi * (beam_major / 2 * 1e6) * (beam_minor / 2 * 1e6)  # µm^2
-
+    beam_area = math.pi * (beam_major / 2 * 1e3) * (beam_minor / 2 * 1e3)  # µm^2
     return laser_power * 1e-3 / beam_area  # W/µm^2
 
 
@@ -127,7 +126,10 @@ def estimate_signal_noise(
     """Return signal and noise estimates.
 
     Computes signal and noise estimates for a given truncated single
-    scattering cross section and laser power.
+    scattering cross section and laser power. This function uses the
+    maximum gain settings for the PMT and preamplifier. This is expected
+    to be larger than the actual signal and noise levels in typical
+    operation, but provides a useful upper bound.
 
     Parameters
     ----------
@@ -148,6 +150,7 @@ def estimate_signal_noise(
         truncated_csca # µm²
         * laser_power_density(ops.laser_power) # W/µm²
         * ops.anode_radiant_sensitivity # A/W
+        * ops.mirror_reflectivity # unitless
     )  # A
 
     signal_noise = 2 * ELEMENTARY_CHARGE * signal_current  # C^2 s^-1
