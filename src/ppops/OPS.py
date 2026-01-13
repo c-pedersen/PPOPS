@@ -127,6 +127,7 @@ class OpticalParticleSpectrometer:
         self.dark_current = dark_current
         self.bandwidth = bandwidth
         self.input_current_noise = input_current_noise
+        self.mirror_reflectivity = 0.80  # Edmund Optics #43-464 at 405 nm
 
     def truncated_scattering_cross_section(
         self,
