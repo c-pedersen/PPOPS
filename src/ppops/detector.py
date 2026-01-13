@@ -67,11 +67,11 @@ def laser_power_density(
     beam waist at the aerosol stream is estimated below assuming a
     Gaussian beam profile. The laser power density is then calculated as
     the laser power divided by the beam area at the aerosol stream
-    assuming a uniform power distribution.    
+    assuming a uniform power distribution.
 
-    Horizontal beam waist at aerosol stream:    
+    Horizontal beam waist at aerosol stream:
     spot_diameter = 4M² * λ * L / (π * w_initial) = 0.054 mm
-    where λ = 405 nm, L = 75 mm, w_initial_horizontal = 1 mm, M² = 1.4 
+    where λ = 405 nm, L = 75 mm, w_initial_horizontal = 1 mm, M² = 1.4
     (assumed).
 
     Vertical beam waist at aerosol stream:
@@ -102,16 +102,16 @@ def laser_power_density(
     spectrometer for PM2.5 aerosol measurements. Aerosol Science and
     Technology 50, 88-99. https://doi.org/10.1080/02786826.2015.1131809
 
-    Laser spot size and beam waist calculator and formulas. Gentec. 
-    (n.d.). 
-    https://www.gentec-eo.com/laser-calculators/beam-waist-spot-size 
+    Laser spot size and beam waist calculator and formulas. Gentec.
+    (n.d.).
+    https://www.gentec-eo.com/laser-calculators/beam-waist-spot-size
     """
 
     if beam_major <= 0 or beam_minor <= 0:
         raise ValueError("Beam major and minor axes must be positive values.")
     if beam_major > 10 or beam_minor > 10 or beam_major < 1e-3 or beam_minor < 1e-3:
         warn(
-            "Beam dimensions in mm seem unrealistic. "
+            "Beam dimensions in millimeters seem unrealistic. "
             "Please verify the input values."
         )
 
@@ -147,10 +147,10 @@ def estimate_signal_noise(
     """
 
     signal_current = (
-        truncated_csca # µm²
-        * laser_power_density(ops.laser_power) # W/µm²
-        * ops.anode_radiant_sensitivity # A/W
-        * ops.mirror_reflectivity # unitless
+        truncated_csca  # µm²
+        * laser_power_density(ops.laser_power)  # W/µm²
+        * ops.anode_radiant_sensitivity  # A/W
+        * ops.mirror_reflectivity  # unitless
     )  # A
 
     signal_noise = 2 * ELEMENTARY_CHARGE * signal_current  # C^2 s^-1

@@ -34,6 +34,10 @@ def ptz2r_sc(
     the spherical POPS mirror and determines polarization weighting factors
     (s- and p-polarization) based on instrument geometry.
 
+    x - perpendicular to laser propagation direction
+    y - laser propagation direction
+    z - vertical direction (positive is down)
+
     Parameters
     ----------
     ops : OpticalParticleSpectrometer
@@ -111,11 +115,11 @@ def ptz2r_sc(
     # Polarization weighting computation
     # -------------------------------------------------------------------------
     if ops.laser_polarization == "unpolarized":
-        e0 = np.array([1 / np.sqrt(2), 1 / np.sqrt(2), 0])  # Unpolarized light
+        e0 = np.array([1 / np.sqrt(2), 0, 1 / np.sqrt(2)])  # Unpolarized light
     elif ops.laser_polarization == "horizontal":
         e0 = np.array([1, 0, 0])  # Horizontal polarization (x-direction)
     elif ops.laser_polarization == "vertical":
-        e0 = np.array([0, 1, 0])  # Vertical polarization (y-direction)
+        e0 = np.array([0, 0, 1])  # Vertical polarization (y-direction)
     else:
         raise ValueError(
             "Invalid polarization state. Only 'unpolarized', 'horizontal', "

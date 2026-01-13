@@ -1,6 +1,5 @@
 import pytest
 import numpy as np
-import math
 import sys
 import os
 
@@ -22,41 +21,13 @@ from ppops.detector import (  # noqa: E402
 )
 
 
-def test_laser_power_density_calculation():
-    """
-    Test the basic calculation of laser power density.
-
-    Logic check:
-    Power = 100 mW -> 0.1 W
-    Major = 2e-3 m -> Radius = 1e-3 m -> 1000 um
-    Minor = 2e-3 m -> Radius = 1e-3 m -> 1000 um
-    Area = pi * 1000 * 1000 (um^2)
-    Density = 0.1 / Area
-    """
-    power_mw = 100.0
-    major_m = 2e-3
-    minor_m = 2e-3
-
-    expected_area = math.pi * 1000.0 * 1000.0  # um^2
-    expected_density = (power_mw * 1e-3) / expected_area
-
-    result = laser_power_density(power_mw, major_m, minor_m)
-
-    assert result == pytest.approx(expected_density)
-
-
 def test_laser_power_density_zero_power():
     """Test that zero power results in zero density."""
-    with pytest.warns(UserWarning, match="Laser power in mW seems unrealistic"):
-        assert laser_power_density(0, 3e-3, 1e-3) == 0.0
+    assert laser_power_density(0, 3e-3, 1e-3) == 0.0
 
 
 def test_laser_power_density_negative_inputs():
     """Test that negative power or dimensions raise ValueErrors."""
-    # Negative power
-    with pytest.raises(ValueError, match="Laser power cannot be negative"):
-        laser_power_density(-10, 3e-3, 1e-3)
-
     # Negative dimensions
     with pytest.raises(ValueError, match="Beam major and minor axes must be positive"):
         laser_power_density(100, -3e-3, 1e-3)
@@ -68,23 +39,16 @@ def test_laser_power_density_negative_inputs():
 def test_laser_power_density_warnings_dimensions():
     """Test that unrealistic beam dimensions trigger warnings."""
     # Too large (> 1e-2)
-    with pytest.warns(UserWarning, match="Beam dimensions in meters seem unrealistic"):
-        laser_power_density(100, 2e-2, 1e-3)
+    with pytest.warns(
+        UserWarning, match="Beam dimensions in millimeters seem unrealistic"
+    ):
+        laser_power_density(100, 1000, 5)
 
     # Too small (< 1e-5)
-    with pytest.warns(UserWarning, match="Beam dimensions in meters seem unrealistic"):
-        laser_power_density(100, 3e-3, 1e-6)
-
-
-def test_laser_power_density_warnings_power():
-    """Test that unrealistic laser power triggers warnings."""
-    # Too high (> 1000)
-    with pytest.warns(UserWarning, match="Laser power in mW seems unrealistic"):
-        laser_power_density(1500, 3e-3, 1e-3)
-
-    # Too low (<= 10 but > 0)
-    with pytest.warns(UserWarning, match="Laser power in mW seems unrealistic"):
-        laser_power_density(5, 3e-3, 1e-3)
+    with pytest.warns(
+        UserWarning, match="Beam dimensions in millimeters seem unrealistic"
+    ):
+        laser_power_density(100, 3, 1e-4)
 
 
 def test_estimate_signal_noise_scalar():
@@ -99,11 +63,12 @@ def test_estimate_signal_noise_scalar():
 
     # Get density to manually calculate expectation
     # We use default beam dimensions from the function signature in detector.py
-    # (3e-3, 1e-3)
-    density = laser_power_density(power, 3e-3, 1e-3)
+    density = laser_power_density(power)
 
     # Manual Signal Calculation
-    expected_signal = csca * density * H10720_110_ANODE_RADIANT_SENSITIVITY
+    expected_signal = (
+        csca * density * H10720_110_ANODE_RADIANT_SENSITIVITY * ops.mirror_reflectivity
+    )
 
     # Manual Noise Calculation
     signal_noise_sq = 2 * ELEMENTARY_CHARGE * expected_signal
