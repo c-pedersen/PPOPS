@@ -281,31 +281,17 @@ class OpticalParticleSpectrometer:
             ) from e
 
         trunc_csca = np.array([])
+        kwargs = {}
+        if n_theta is not None:
+            kwargs["n_theta"] = n_theta
+        if n_phi is not None:
+            kwargs["n_phi"] = n_phi
+
         for diameter in diameters:
-            if n_theta is not None and n_phi is not None:
-                trunc_csca = np.append(
-                    trunc_csca,
-                    self.truncated_scattering_cross_section(
-                        ior, diameter, n_theta=n_theta, n_phi=n_phi
-                    ),
-                )
-            if n_theta is not None and n_phi is None:
-                trunc_csca = np.append(
-                    trunc_csca,
-                    self.truncated_scattering_cross_section(
-                        ior, diameter, n_theta=n_theta
-                    ),
-                )
-            if n_theta is None and n_phi is not None:
-                trunc_csca = np.append(
-                    trunc_csca,
-                    self.truncated_scattering_cross_section(ior, diameter, n_phi=n_phi),
-                )
-            else:
-                trunc_csca = np.append(
-                    trunc_csca,
-                    self.truncated_scattering_cross_section(ior, diameter),
-                )
+            trunc_csca = np.append(
+                trunc_csca,
+                self.truncated_scattering_cross_section(ior, diameter, **kwargs),
+            )
 
         signal, noise = detector.estimate_signal_noise(self, trunc_csca)
 
