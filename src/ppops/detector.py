@@ -76,15 +76,17 @@ def anode_radiant_sensitivity(PMT_control_voltage: float) -> float:
         + H10720_110_GAIN_INTERCEPT
     )
 
-    return H10720_110_CATHODE_RADIANT_SENSITIVITY * gain
+    return H10720_110_CATHODE_RADIANT_SENSITIVITY * gain / 1000
 
 
-def laser_power_density(
+def laser_peak_power_density(
     laser_power: float,
     beam_major: float = 6,
     beam_minor: float = 0.054,
 ) -> float:
-    """Return the laser power density at the aerosol stream.
+    """Return the laser peak power density at the aerosol stream.
+    Assumes a Gaussian beam profile and that the beam is focused at the
+    aerosol stream.
 
     The inital beam dimensions are taken from Gao et al. 2016 and the
     beam waist at the aerosol stream is estimated below assuming a
@@ -139,7 +141,7 @@ def laser_power_density(
         )
 
     beam_area = math.pi * (beam_major / 2 * 1e3) * (beam_minor / 2 * 1e3)  # µm^2
-    return laser_power * 1e-3 / beam_area  # W/µm^2
+    return 2 * laser_power * 1e-3 / beam_area  # W/µm^2
 
 
 def estimate_signal_noise(
@@ -171,7 +173,7 @@ def estimate_signal_noise(
 
     signal_current = (
         truncated_csca  # µm²
-        * laser_power_density(ops.laser_power)  # W/µm²
+        * laser_peak_power_density(ops.laser_power)  # W/µm²
         * ops.anode_radiant_sensitivity  # A/W
         * ops.mirror_reflectivity  # unitless
     )  # A
