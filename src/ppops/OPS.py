@@ -138,8 +138,8 @@ class OpticalParticleSpectrometer:
         self,
         ior: complex,
         diameter: float,
-        n_theta: int = 50,
-        n_phi: int = 40,
+        n_theta: int = 51,
+        n_phi: int = 41,
     ) -> NDArray[np.floating]:
         """
         Simulates OPS scattering and computed truncated cross-sections.
@@ -154,10 +154,12 @@ class OpticalParticleSpectrometer:
             Complex refractive index of the particle.
         diameter : float
             Diameter of the particle in micrometers.
-        n_theta : int
-            Number of polar angle samples for integration.
-        n_phi : int
-            Number of azimuthal angle samples for integration.
+        n_theta : int, default 51
+            Number of polar angle samples for integration. Should be an 
+            odd integer for Simpson's rule.
+        n_phi : int, default 41
+            Number of azimuthal angle samples for integration.Should be 
+            an odd integer for Simpson's rule.
 
         Returns
         -------
@@ -174,10 +176,10 @@ class OpticalParticleSpectrometer:
                 "Diameter outside of expected range. Verify diameter is in micrometers."
             )
 
-        if not isinstance(n_theta, int) or n_theta <= 0:
-            raise ValueError("n_theta must be a positive integer.")
-        if not isinstance(n_phi, int) or n_phi <= 0:
-            raise ValueError("n_phi must be a positive integer.")
+        if not isinstance(n_theta, int) or n_theta <= 0 or n_theta % 2 == 0:
+            raise ValueError("n_theta must be a positive, odd integer.")
+        if not isinstance(n_phi, int) or n_phi <= 0 or n_phi % 2 == 0:
+            raise ValueError("n_phi must be a positive, odd integer.")
 
         # Derived quantities
         theta_max = np.arctan(self.mirror_radius / self.h)
