@@ -11,10 +11,10 @@ sys.path.insert(0, os.path.abspath(src_dir))
 
 import ppops  # noqa: E402
 from ppops.detector import (  # noqa: E402
-    laser_power_density,
+    laser_peak_power_density,
     estimate_signal_noise,
+    anode_radiant_sensitivity,
     ELEMENTARY_CHARGE,
-    H10720_110_ANODE_RADIANT_SENSITIVITY,
     H10720_110_DARK_CURRENT,
     BANDWIDTH,
     TIA60_INPUT_CURRENT_NOISE,
@@ -23,17 +23,17 @@ from ppops.detector import (  # noqa: E402
 
 def test_laser_power_density_zero_power():
     """Test that zero power results in zero density."""
-    assert laser_power_density(0, 3e-3, 1e-3) == 0.0
+    assert laser_peak_power_density(0, 3e-3, 1e-3) == 0.0
 
 
 def test_laser_power_density_negative_inputs():
     """Test that negative power or dimensions raise ValueErrors."""
     # Negative dimensions
     with pytest.raises(ValueError, match="Beam major and minor axes must be positive"):
-        laser_power_density(100, -3e-3, 1e-3)
+        laser_peak_power_density(100, -3e-3, 1e-3)
 
     with pytest.raises(ValueError, match="Beam major and minor axes must be positive"):
-        laser_power_density(100, 3e-3, 0)
+        laser_peak_power_density(100, 3e-3, 0)
 
 
 def test_laser_power_density_warnings_dimensions():
@@ -42,13 +42,13 @@ def test_laser_power_density_warnings_dimensions():
     with pytest.warns(
         UserWarning, match="Beam dimensions in millimeters seem unrealistic"
     ):
-        laser_power_density(100, 1000, 5)
+        laser_peak_power_density(100, 1000, 5)
 
     # Too small (< 1e-5)
     with pytest.warns(
         UserWarning, match="Beam dimensions in millimeters seem unrealistic"
     ):
-        laser_power_density(100, 3, 1e-4)
+        laser_peak_power_density(100, 3, 1e-4)
 
 
 def test_estimate_signal_noise_scalar():
@@ -63,11 +63,14 @@ def test_estimate_signal_noise_scalar():
 
     # Get density to manually calculate expectation
     # We use default beam dimensions from the function signature in detector.py
-    density = laser_power_density(power)
+    density = laser_peak_power_density(power)
 
     # Manual Signal Calculation
     expected_signal = (
-        csca * density * H10720_110_ANODE_RADIANT_SENSITIVITY * ops.mirror_reflectivity
+        csca
+        * density
+        * anode_radiant_sensitivity(ops.pmt_control_voltage)
+        * ops.mirror_reflectivity
     )
 
     # Manual Noise Calculation
