@@ -155,10 +155,10 @@ class OpticalParticleSpectrometer:
         diameter : float
             Diameter of the particle in micrometers.
         n_theta : int, default 51
-            Number of polar angle samples for integration. Should be an 
+            Number of polar angle samples for integration. Should be an
             odd integer for Simpson's rule.
         n_phi : int, default 41
-            Number of azimuthal angle samples for integration.Should be 
+            Number of azimuthal angle samples for integration.Should be
             an odd integer for Simpson's rule.
 
         Returns
