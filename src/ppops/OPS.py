@@ -35,7 +35,7 @@ class OpticalParticleSpectrometer:
         mirror_radius: float = 12.5,
         mirror_radius_of_curvature: float = 20.0,
         aerosol_mirror_separation: float = 14.2290,
-        anode_radiant_sensitivity=detector.H10720_110_ANODE_RADIANT_SENSITIVITY,
+        pmt_control_voltage: float = 0.537,
         dark_current=detector.H10720_110_DARK_CURRENT,
         bandwidth=detector.BANDWIDTH,
         input_current_noise=detector.TIA60_INPUT_CURRENT_NOISE,
@@ -59,9 +59,10 @@ class OpticalParticleSpectrometer:
         aerosol_mirror_separation : float, default 14.2290
             Separation between the aerosol and the center of the mirror
             in millimeters.
-        anode_radiant_sensitivity : float, default 2.2e5 (see detector.py)
-            Anode radiant sensitivity of the detector in Amperes per
-            Watt.
+        pmt_control_voltage : float, default 0.537
+            Control voltage of the PMT in volts. Default is 0.537 V, 
+            which was measured on a NOAA-gen POPS. Adjust for different 
+            instruments.
         dark_current : float, default 1e-9 (see detector.py)
             Dark current of the detector in Amperes.
         bandwidth : float, default 4e6 (see detector.py)
@@ -123,11 +124,15 @@ class OpticalParticleSpectrometer:
         self.h = aerosol_mirror_separation - mirror_depth(
             mirror_radius=mirror_radius, radius_of_curvature=mirror_radius_of_curvature
         )
-        self.anode_radiant_sensitivity = anode_radiant_sensitivity
+        self.pmt_control_voltage = pmt_control_voltage
         self.dark_current = dark_current
         self.bandwidth = bandwidth
         self.input_current_noise = input_current_noise
+        
         self.mirror_reflectivity = 0.80  # Edmund Optics #43-464 at 405 nm
+        self.anode_radiant_sensitivity = detector.anode_radiant_sensitivity(
+            self.pmt_control_voltage
+        )
 
     def truncated_scattering_cross_section(
         self,

@@ -46,7 +46,9 @@ if TYPE_CHECKING:
 ELEMENTARY_CHARGE = 1.602176634e-19  # C
 
 # Detector specifications - Hamamatsu H10720-110 PMT
-H10720_110_ANODE_RADIANT_SENSITIVITY = 2.2e5  # A/W
+H10720_110_CATHODE_RADIANT_SENSITIVITY = 110  # mA/W
+H10720_110_GAIN_SLOPE = 8.645  # slope of gain curve (log-log scale)
+H10720_110_GAIN_INTERCEPT = 6.299  # intercept of gain curve (log-log scale)
 H10720_110_DARK_CURRENT = 1e-9  # typical dark current (A)
 
 # Specifications from Gao et al. 2016
@@ -54,6 +56,27 @@ BANDWIDTH = 4e6  # bandwidth (Hz)
 
 # Preamplifier specifications - Thor TIA60 PMT amplifier
 TIA60_INPUT_CURRENT_NOISE = 4.8e-12  # A/sqrt(Hz)
+
+
+def anode_radiant_sensitivity(PMT_control_voltage: float) -> float:
+    """Return the anode radiant sensitivity of the PMT in A/W.
+
+    Parameters
+    ----------
+    PMT_control_voltage : float
+        Control voltage of the PMT in volts.
+
+    Returns
+    -------
+    float
+        Anode radiant sensitivity in A/W.
+    """
+    gain = 10 ** (
+        H10720_110_GAIN_SLOPE * np.log10(PMT_control_voltage)
+        + H10720_110_GAIN_INTERCEPT
+    )
+
+    return H10720_110_CATHODE_RADIANT_SENSITIVITY * gain
 
 
 def laser_power_density(
