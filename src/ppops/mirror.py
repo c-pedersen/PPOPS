@@ -46,7 +46,3 @@ def mirror_depth(mirror_radius: float, radius_of_curvature: float) -> float:
         Depth of the mirror. Units are the same as the input parameters.
     """
     return radius_of_curvature - (radius_of_curvature**2 - mirror_radius**2) ** 0.5
-
-
-if __name__ == "__main__":
-    print(14.229 - mirror_depth(12.5, 20))
