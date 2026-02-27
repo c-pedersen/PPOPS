@@ -60,8 +60,8 @@ class OpticalParticleSpectrometer:
             Separation between the aerosol and the center of the mirror
             in millimeters.
         pmt_control_voltage : float, default 0.537
-            Control voltage of the PMT in volts. Default is 0.537 V, 
-            which was measured on a NOAA-gen POPS. Adjust for different 
+            Control voltage of the PMT in volts. Default is 0.537 V,
+            which was measured on a NOAA-gen POPS. Adjust for different
             instruments.
         dark_current : float, default 1e-9 (see detector.py)
             Dark current of the detector in Amperes.
@@ -128,7 +128,7 @@ class OpticalParticleSpectrometer:
         self.dark_current = dark_current
         self.bandwidth = bandwidth
         self.input_current_noise = input_current_noise
-        
+
         self.mirror_reflectivity = 0.80  # Edmund Optics #43-464 at 405 nm
         self.anode_radiant_sensitivity = detector.anode_radiant_sensitivity(
             self.pmt_control_voltage
@@ -246,6 +246,8 @@ class OpticalParticleSpectrometer:
         self,
         ior: complex,
         diameters: float | ArrayLike,
+        n_theta: int | None = None,
+        n_phi: int | None = None,
     ) -> tuple[float | np.ndarray, float | np.ndarray]:
         """
         Estimate the signal amplitude from the scattered light incident
@@ -257,6 +259,12 @@ class OpticalParticleSpectrometer:
             Complex refractive index of the particle.
         diameters : float | np.ndarray
             Diameter of the particle in micrometers.
+        n_theta : int | None
+            Number of polar angle samples for integration. If None, uses
+            default value in truncated_scattering_cross_section.
+        n_phi : int | None
+            Number of azimuthal angle samples for integration. If None,
+            uses default value in truncated_scattering_cross_section.
 
         Returns
         -------
@@ -274,10 +282,30 @@ class OpticalParticleSpectrometer:
 
         trunc_csca = np.array([])
         for diameter in diameters:
-            trunc_csca = np.append(
-                trunc_csca,
-                self.truncated_scattering_cross_section(ior, diameter),
-            )
+            if n_theta is not None and n_phi is not None:
+                trunc_csca = np.append(
+                    trunc_csca,
+                    self.truncated_scattering_cross_section(
+                        ior, diameter, n_theta=n_theta, n_phi=n_phi
+                    ),
+                )
+            if n_theta is not None and n_phi is None:
+                trunc_csca = np.append(
+                    trunc_csca,
+                    self.truncated_scattering_cross_section(
+                        ior, diameter, n_theta=n_theta
+                    ),
+                )
+            if n_theta is None and n_phi is not None:
+                trunc_csca = np.append(
+                    trunc_csca,
+                    self.truncated_scattering_cross_section(ior, diameter, n_phi=n_phi),
+                )
+            else:
+                trunc_csca = np.append(
+                    trunc_csca,
+                    self.truncated_scattering_cross_section(ior, diameter),
+                )
 
         signal, noise = detector.estimate_signal_noise(self, trunc_csca)
 
