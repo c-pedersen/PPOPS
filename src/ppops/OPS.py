@@ -35,7 +35,7 @@ class OpticalParticleSpectrometer:
         mirror_radius: float = 12.5,
         mirror_radius_of_curvature: float = 20.0,
         aerosol_mirror_separation: float = 14.2290,
-        pmt_control_voltage: float = 0.537,
+        pmt_control_voltage: float = 0.619,
         dark_current=detector.H10720_110_DARK_CURRENT,
         bandwidth=detector.BANDWIDTH,
         input_current_noise=detector.TIA60_INPUT_CURRENT_NOISE,
@@ -59,9 +59,9 @@ class OpticalParticleSpectrometer:
         aerosol_mirror_separation : float, default 14.2290
             Separation between the aerosol and the center of the mirror
             in millimeters.
-        pmt_control_voltage : float, default 0.537
-            Control voltage of the PMT in volts. Default is 0.537 V,
-            which was measured on a NOAA-gen POPS. Adjust for different
+        pmt_control_voltage : float, default 0.619
+            Control voltage of the PMT in volts. Default is 0.619 V,
+            which was measured on a Handix POPS. Adjust for different
             instruments.
         dark_current : float, default 1e-9 (see detector.py)
             Dark current of the detector in Amperes.
