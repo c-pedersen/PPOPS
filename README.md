@@ -7,28 +7,34 @@ Performance Prediction for Optical Particle Spectrometer
 
 ## Overview
 
-This repository implements a Mie scattering model and Optical Particle
-Spectrometer (OPS) geometry simulation to calculate the truncated
-scattering cross section—the portion of scattered light collected by the
-OPS mirror-and the resulting signal and noise current. To do this, the
-package integrates the Mie scattering intensity over the solid-angle
-acceptance of the OPS, based on the geometry of its optical collection
-system. The default instrument design and specifications (e.g., mirror
-geometry, photomultiplier tube specifications) are taken from Gao et
-al., AS&T, 2016.
+This repository simulates the performance of a simple Optical Particle
+Spectrometer (OPS) using a physics-based model. The default optical
+system is based on Gao et al., Aerosol Sci. Technol., 2016, which is
+also what the POPS instrument sold by Handix Scientific is based on. The
+PPOPS model is semi-validated in that PPOPS modeled signal was within 50% of the
+actual signal of a POPS unit from Handix Scientific (see validation
+section of PPOPS website for more information).
 
-The workflow includes:
+The PPOPS model calculates the amount and direction of scattered light
+by aerosols according to Mie theory. The scattered light is integrated
+over the solid-angle acceptance of the collection mirror to calculate a truncated scattering cross section (the effective scattering cross section). This
+truncated scattering cross section is then used to calculate the
+instrument signal and noise current.
 
-1. Computing Mie coefficients (`a_n`, `b_n`) for electric and magnetic
+To summarize, the PPOPS workflow includes,
+
+1. Use calculate the scattering amplitudes (`S₁`, `S₂`) according to Mie
+theory.
+   1. Computing Mie coefficients (`a_n`, `b_n`) for electric and magnetic
 scattering modes.
-2. Generating angular functions (`π_n`, `τ_n`) that describe
+   1. Generating angular functions (`π_n`, `τ_n`) that describe
 angle-dependent intensity.
-3. Combining them into scattering amplitudes (`S₁`, `S₂`) for both
-polarization states. (Steps 1-3 are now implemented using miepython)
-4. Integrating over the OPS collection mirror’s polar and azimuthal
+1. Integrating over the OPS collection mirror’s polar and azimuthal
 acceptance to compute the truncated scattering cross section.
-5. Convert the truncated scattering cross section to signal and noise
+1. Convert the truncated scattering cross section to signal and noise
 current based on detector specifications.
+1. Optionally, convert signal current to digitizer bins for direct
+comparison with POPS data.
 
 ## Assumptions
 
@@ -43,13 +49,14 @@ This package make several assumptions:
 
 ## Installation
 
-Clone the repository and install dependencies:
+PPOPS is available via PyPI
 
-git clone <https://github.com/yourusername/PPOPS.git>
-cd PPOPS
-pip install -r requirements.txt
+```Python
+pip install ppops
+```
 
 ## Usage
+See PPOPS website for more information.
 
 ```Python
 import ppops
@@ -61,21 +68,16 @@ ops.estimate_signal_noise(diameters = [0.1, 0.5, 1.0], ior = 1.5+0.001j)
 
 ## References
 
-Gao, R.S., Telg, H., McLaughlin, R.J., Ciciora, S.J., Watts, L.A.,
-Richardson, M.S., Schwarz, J.P., Perring, A.E., Thornberry, T.D.,
-Rollins, A.W., Markovic, M.Z., Bates, T.S., Johnson, J.E., Fahey, D.W.,
-2016. A light-weight, high-sensitivity particle spectrometer for PM2.5
-2017. aerosol measurements. Aerosol Science and Technology 50, 88–99.
-2018. <https://doi.org/10.1080/02786826.2015.1131809>
+Gao, R.S., Telg, H., McLaughlin, R.J., Ciciora, S.J., Watts, L.A., Richardson, M.S., Schwarz, J.P., Perring, A.E., Thornberry, T.D., Rollins, A.W., Markovic, M.Z., Bates, T.S., Johnson, J.E., Fahey, D.W., 2016. A light-weight, high-sensitivity particle spectrometer for PM2.5 aerosol measurements. Aerosol Science and Technology 50, 88–99. https://doi.org/10.1080/02786826.2015.1131809
 
 miepython: 10.5281/zenodo.7949263
 
 ## Author Notes
 
 This repository is intended as a transparent, well-documented
-implementation of Mie scattering and optical geometry for OPS
+implementation of Mie scattering and optical geometry for POPS
 performance prediction and analysis.
 
 ## License
 
-``PPOPS`` is released under the MIT license.
+`PPOPS` is released under the MIT license.
