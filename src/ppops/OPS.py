@@ -298,3 +298,35 @@ class OpticalParticleSpectrometer:
         signal, noise = detector.estimate_signal_noise(self, trunc_csca)
 
         return signal, noise
+
+
+def digitize_signal(
+    signal_current: float | NDArray[np.float64],
+    max_voltage: float = 5,
+    digitizer_bins: int = 65536,
+    feedback_resistor: float = 2050,
+) -> float | NDArray[np.float64]:
+    """Convert signal current to digitizer bins.
+
+    Parameters
+    ----------
+    signal_current : float or np.ndarray
+        Signal current in Amperes (A).
+    max_voltage : float, default 5
+        Maximum voltage of the digitizer in Volts (V).
+    digitizer_bins : int, default 65536
+        Number of bins in the digitizer (16-bit digitizer).
+    feedback_resistor : float, default 2050
+        Feedback resistor value in Ohms (Ω) used in the transimpedance
+        amplifier. Default is 2050 Ω, based on correspondence with
+        Handix Scientific.
+
+    Returns
+    -------
+    float or np.ndarray
+        Signal amplitude in digitizer bins.
+    """
+    if np.any(signal_current < 0):
+        raise ValueError("Signal current must be non-negative.")
+
+    return signal_current * feedback_resistor * (digitizer_bins / max_voltage)
