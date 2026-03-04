@@ -88,7 +88,7 @@ def laser_peak_power_density(
     Assumes a Gaussian beam profile and that the beam is focused at the
     aerosol stream.
 
-    The inital beam dimensions are taken from Gao et al. 2016 and the
+    The initial beam dimensions are taken from Gao et al. 2016 and the
     beam waist at the aerosol stream is estimated below assuming a
     Gaussian beam profile. The laser power density is then calculated as
     the laser power divided by the beam area at the aerosol stream
