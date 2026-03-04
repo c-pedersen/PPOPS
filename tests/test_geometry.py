@@ -11,8 +11,8 @@ sys.path.insert(0, os.path.abspath(src_dir))
 from ppops.geometry import ptz2r_sc  # noqa: E402
 from ppops.OPS import OpticalParticleSpectrometer  # noqa: E402
 
-# Tolerance for floating point comparisons
-TOL = 6
+# DECIMALSerance for floating point comparisons
+DECIMALS = 6
 
 
 def test_basic_run_and_output_structure():
@@ -61,11 +61,11 @@ def test_polarization_conservation():
         ops.aerosol_mirror_separation = aerosol_mirror_separation
         _, _, _, _, ws, wp, _ = ptz2r_sc(ops=ops, phi=phi, theta=theta)
 
-        # Check that ws + wp equals 1.0 within tolerance
+        # Check that ws + wp equals 1.0 within DECIMALSerance
         np.testing.assert_almost_equal(
             ws + wp,
             np.ones_like(ws),
-            decimal=TOL,
+            decimal=DECIMALS,
             err_msg="Polarization weights (ws + wp) must sum to 1.0",
         )
 
@@ -91,13 +91,13 @@ def test_degenerate_forward_scattering():
     np.testing.assert_almost_equal(
         ws,
         np.ones_like(ws),
-        decimal=TOL,
+        decimal=DECIMALS,
         err_msg="WS should be 1.0 in degenerate (theta=0) case.",
     )
     np.testing.assert_almost_equal(
         wp,
         np.zeros_like(wp),
-        decimal=TOL,
+        decimal=DECIMALS,
         err_msg="WP should be 0.0 in degenerate (theta=0) case.",
     )
 
@@ -132,12 +132,12 @@ def test_pure_s_polarization():
     np.testing.assert_almost_equal(
         ws,
         np.zeros_like(ws),
-        decimal=TOL,
+        decimal=DECIMALS,
         err_msg="WS should be 0.0 in the pure p-polarization case (phi=pi/2, theta=pi/2).",
     )
     np.testing.assert_almost_equal(
         wp,
         np.ones_like(wp),
-        decimal=TOL,
+        decimal=DECIMALS,
         err_msg="WP should be 1.0 in the pure p-polarization case (phi=pi/2, theta=pi/2).",
     )

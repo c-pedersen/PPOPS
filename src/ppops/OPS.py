@@ -36,9 +36,9 @@ class OpticalParticleSpectrometer:
         mirror_radius_of_curvature: float = 20.0,
         aerosol_mirror_separation: float = 14.2290,
         pmt_control_voltage: float = 0.619,
-        dark_current=detector.H10720_110_DARK_CURRENT,
-        bandwidth=detector.BANDWIDTH,
-        input_current_noise=detector.TIA60_INPUT_CURRENT_NOISE,
+        dark_current: float = detector.H10720_110_DARK_CURRENT,
+        bandwidth: float = detector.BANDWIDTH,
+        input_current_noise: float = detector.TIA60_INPUT_CURRENT_NOISE,
     ):
         """Initialize the OPS instrument parameters.
 
@@ -189,11 +189,11 @@ class OpticalParticleSpectrometer:
             )
 
         if not isinstance(n_theta, int) or n_theta <= 0:
-            raise ValueError("n_theta must be a positive, odd integer.")
+            raise ValueError("n_theta must be a positive integer.")
         if n_theta % 2 == 0:
             warn("n_theta should be an odd integer for Simpson's rule.")
         if not isinstance(n_phi, int) or n_phi <= 0:
-            raise ValueError("n_phi must be a positive, odd integer.")
+            raise ValueError("n_phi must be a positive integer.")
         if n_phi % 2 == 0:
             warn("n_phi should be an odd integer for Simpson's rule.")
 

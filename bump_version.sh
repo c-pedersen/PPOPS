@@ -96,22 +96,22 @@ cd ../..
 echo "Documentation built successfully"
 echo ""
 
-# Update version numbers in pyproject.toml and flowtube/__init__.py
+# Update version numbers in pyproject.toml and src/ppops/__init__.py
 echo "Updating version numbers..."
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     sed -i '' "s/version = \".*\"/version = \"$NEW_VERSION\"/" pyproject.toml
-    sed -i '' "s/__version__ = \".*\"/__version__ = \"$NEW_VERSION\"/" flowtube/__init__.py
+    sed -i '' "s/__version__ = \".*\"/__version__ = \"$NEW_VERSION\"/" src/ppops/__init__.py
 else
     sed -i "s/version = \".*\"/version = \"$NEW_VERSION\"/" pyproject.toml
-    sed -i "s/__version__ = \".*\"/__version__ = \"$NEW_VERSION\"/" flowtube/__init__.py
+    sed -i "s/__version__ = \".*\"/__version__ = \"$NEW_VERSION\"/" src/ppops/__init__.py
 fi
 
 # Print success message and next steps
 echo "Version updated to $NEW_VERSION"
 echo ""
 echo "Next steps:"
-echo "  git add pyproject.toml flowtube/__init__.py"
+echo "  git add pyproject.toml src/ppops/__init__.py"
 echo "  git commit -m 'Bump version to $NEW_VERSION'"
 echo "  git push origin main"
 echo "  git tag v$NEW_VERSION"
