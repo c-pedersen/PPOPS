@@ -6,24 +6,27 @@ Handles POPS geometry and polarization calculations.
 This module includes functions for computing geometric parameters related to
 light scattering from the particle-laser interaction zone to the POPS mirror.
 It also calculates polarization weighting factors (s- and p-components) for
-the instrument’s optical collection efficiency.
+the instrument's optical collection efficiency.
 
 Functions:
-    ptz2r_sc(phi, theta, y0): Computes mirror intersection geometry, maximum
-    azimuthal angle, and polarization weights.
+- ptz2r_sc(OpticalParticleSpectrometer, phi, theta): Computes mirror
+intersection geometry, maximum azimuthal angle, and polarization
+weights.
 """
+
+from __future__ import annotations
+from typing import TYPE_CHECKING
 
 import numpy as np
 
+if TYPE_CHECKING:
+    from .OPS import OpticalParticleSpectrometer
+
 
 def ptz2r_sc(
+    ops: OpticalParticleSpectrometer,
     phi: np.ndarray,
     theta: np.ndarray,
-    mirror_radius: float,
-    mirror_radius_of_curvature: float,
-    y0: float,
-    h: float,
-    laser_polarization: str,
 ):
     """Compute POPS mirror geometry and polarization weighting.
 
@@ -31,26 +34,18 @@ def ptz2r_sc(
     the spherical POPS mirror and determines polarization weighting factors
     (s- and p-polarization) based on instrument geometry.
 
+    x - perpendicular to laser propagation direction
+    y - laser propagation direction
+    z - vertical direction (positive is down)
+
     Parameters
     ----------
+    ops : OpticalParticleSpectrometer
+        Instance of the OpticalParticleSpectrometer class.
     phi : np.ndarray
         Azimuthal scattering angles [radians]. Shape: (n,)
     theta : np.ndarray
         Polar scattering angles [radians]. Shape: (n,)
-    mirror_radius : float
-        Radius of the POPS mirror [mm].
-    mirror_radius_of_curvature : float
-        Radius of curvature of the POPS mirror [mm].
-    y0 : float
-        Distance from mirror vertex to particle-laser interaction
-        region along the mirror axis [mm].
-    h : float
-        Height of the particle-laser interaction region above
-        the mirror vertex [mm].
-    laser_polarization : str
-        Polarization state of the incident laser light. Options are
-        'unpolarized', 'horizontal', or 'vertical'. Default is
-        'horizontal'.
 
     Returns
     -------
@@ -87,8 +82,8 @@ def ptz2r_sc(
     ay = np.sqrt(1 - alpha**2) * sin_theta
     az = mu
     a = ax**2 + ay**2 + az**2
-    b = 2 * y0 * ay
-    c = y0**2 - mirror_radius_of_curvature**2
+    b = 2 * ops.aerosol_mirror_separation * ay
+    c = ops.aerosol_mirror_separation**2 - ops.mirror_radius_of_curvature**2
 
     # Quadratic solutions
     discriminant = np.sqrt(b**2 - 4 * a * c)
@@ -96,8 +91,8 @@ def ptz2r_sc(
     rm = (-b - discriminant) / (2 * a)
 
     # Compute maximum azimuthal collection angle
-    r_min = np.sqrt(h**2 + mirror_radius**2)
-    phi_max = np.arccos(np.clip(h / (r_min * sin_theta), -1, 1))
+    r_min = np.sqrt(ops.h**2 + ops.mirror_radius**2)
+    phi_max = np.arccos(np.clip(ops.h / (r_min * sin_theta), -1, 1))
 
     # Cartesian coordinates - shape (n, 3)
     x = np.stack(
@@ -111,7 +106,7 @@ def ptz2r_sc(
 
     # Compute mirror orientation and obliquity factor
     x_norm = x / np.linalg.norm(x, axis=-1, keepdims=True)
-    s_norm = x - np.array([0, -y0, 0])
+    s_norm = x - np.array([0, -ops.aerosol_mirror_separation, 0])
     s_norm = s_norm / np.linalg.norm(s_norm, axis=-1, keepdims=True)
 
     # Obliquity factor: dot product along last axis
@@ -119,12 +114,12 @@ def ptz2r_sc(
 
     # Polarization weighting computation
     # -------------------------------------------------------------------------
-    if laser_polarization == "unpolarized":
-        e0 = np.array([1 / np.sqrt(2), 1 / np.sqrt(2), 0])  # Unpolarized light
-    elif laser_polarization == "horizontal":
+    if ops.laser_polarization == "unpolarized":
+        e0 = np.array([1 / np.sqrt(2), 0, 1 / np.sqrt(2)])  # Unpolarized light
+    elif ops.laser_polarization == "horizontal":
         e0 = np.array([1, 0, 0])  # Horizontal polarization (x-direction)
-    elif laser_polarization == "vertical":
-        e0 = np.array([0, 1, 0])  # Vertical polarization (y-direction)
+    elif ops.laser_polarization == "vertical":
+        e0 = np.array([0, 0, 1])  # Vertical polarization (z-direction)
     else:
         raise ValueError(
             "Invalid polarization state. Only 'unpolarized', 'horizontal', "

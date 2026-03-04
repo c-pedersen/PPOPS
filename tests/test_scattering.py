@@ -34,19 +34,19 @@ def test_Qsca_truncation():
     ops = ppops.OpticalParticleSpectrometer()
     ops.h = 0.000001  # Set a small height for the interaction region above the mirror vertex
 
-    iors = np.array([1.33 + 1e-8j, 1.5 + 0.01j, 2.0 + 0.1j, 1.0 + 0.0j, 1.6 + 0.0j])
+    ris = np.array([1.33 + 1e-8j, 1.5 + 0.01j, 2.0 + 0.1j, 1.0 + 0.0j, 1.6 + 0.0j])
     diameters = np.array([0.1, 0.5, 1.0, 2.0, 5.0])  # in micrometers
 
-    for ior in iors:
+    for ri in ris:
         for diameter in diameters:
             geometric_cross_section = np.pi * (diameter / 2) ** 2
             qsca = miepython.efficiencies(
-                m=ior, d=diameter, lambda0=ops.laser_wavelength
+                m=ri, d=diameter, lambda0=ops.laser_wavelength
             )[1]
 
             trunc_qsca = (
                 ops.truncated_scattering_cross_section(
-                    ior=ior, diameter=diameter, n_theta=150, n_phi=150
+                    ri=ri, diameters=diameter, n_theta=151, n_phi=151
                 )
                 / geometric_cross_section
             )

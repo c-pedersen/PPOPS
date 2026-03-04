@@ -20,9 +20,11 @@ __url__ = "https://github.com/c-pedersen/PPOPS"
 from . import geometry
 from . import detector
 from .OPS import OpticalParticleSpectrometer
+from .OPS import digitize_signal
 
 __all__ = [
     "OpticalParticleSpectrometer",
     "geometry",
     "detector",
+    "digitize_signal",
 ]

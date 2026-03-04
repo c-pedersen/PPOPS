@@ -13,6 +13,12 @@
    01_example_usage.ipynb
 
 .. toctree::
+   :caption: Validation
+   :hidden:
+
+   02_validation.ipynb
+
+.. toctree::
    :caption: Versions
    :hidden:
 
