@@ -5,6 +5,8 @@ Performance Prediction for Optical Particle Spectrometer
 [![codecov](https://codecov.io/gh/c-pedersen/ppops/branch/main/graph/badge.svg?ts=20251106)](https://codecov.io/gh/c-pedersen/ppops)
 [![CI](https://github.com/c-pedersen/PPOPS/actions/workflows/ci.yml/badge.svg)](https://github.com/c-pedersen/PPOPS/actions/workflows/ci.yml)
 
+Documentation: <https://rtd-ppops.readthedocs.io/>
+
 ## Overview
 
 This repository simulates the performance of a simple Optical Particle
