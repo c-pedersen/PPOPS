@@ -137,10 +137,10 @@ class OpticalParticleSpectrometer:
     def truncated_scattering_cross_section(
         self,
         ri: complex,
-        diameter: float,
+        diameters: float | ArrayLike,
         n_theta: int = 51,
         n_phi: int = 41,
-    ) -> NDArray[np.floating]:
+    ) -> NDArray[np.float64]:
         """
         Simulates OPS scattering and computed truncated cross-sections.
 
@@ -152,7 +152,7 @@ class OpticalParticleSpectrometer:
         ----------
         ri : complex
             Complex refractive index of the particle.
-        diameter : float
+        diameters : float | ArrayLike
             Diameter of the particle in micrometers.
         n_theta : int, default 51
             Number of polar angle samples for integration. Should be an
@@ -172,11 +172,20 @@ class OpticalParticleSpectrometer:
                 "Imaginary part of refractive indices must be non-negative and real"
                 "part must be >= 1."
             )
-        if diameter <= 0:
-            raise ValueError("Diameter must be a positive value.")
-        if diameter < 0.001 or diameter > 100:
+        try:
+            if isinstance(diameters, (float, int)):
+                diameters = np.array([diameters], dtype=float)
+            else:
+                diameters = np.asarray(diameters, dtype=float)
+        except Exception as e:
+            raise TypeError(
+                "Diameters must be convertible to a numpy array of floats."
+            ) from e
+        if np.any(diameters <= 0):
+            raise ValueError("Diameters must be positive values.")
+        if np.any(diameters < 0.001) or np.any(diameters > 100):
             warn(
-                "Diameter outside of expected range. Verify diameter is in micrometers."
+                "Some diameters are outside of expected range. Verify diameters are in micrometers."
             )
 
         if not isinstance(n_theta, int) or n_theta <= 0:
@@ -188,18 +197,13 @@ class OpticalParticleSpectrometer:
         if n_phi % 2 == 0:
             warn("n_phi should be an odd integer for Simpson's rule.")
 
+        ### Mirror Integration ###
         # Derived quantities
         theta_max = np.arctan(self.mirror_radius / self.h)
         theta_values = np.linspace(
             np.pi / 2 - theta_max, np.pi / 2 + theta_max, n_theta
         )
-        size_parameter = np.pi / self.laser_wavelength * diameter
         r_min = np.sqrt(self.mirror_radius**2 + self.h**2)
-
-        # Compute S1, S2
-        mp_s1s2 = S1_S2(m=ri, x=size_parameter, mu=np.cos(theta_values), norm="qsca")
-        s1_sq = np.abs(mp_s1s2[0]) ** 2
-        s2_sq = np.abs(mp_s1s2[1]) ** 2
 
         # Build complete grid of (theta, phi) pairs
         # Preallocate numpy arrays
@@ -230,26 +234,46 @@ class OpticalParticleSpectrometer:
             theta=all_thetas,
         )
 
-        # Compute integrand for all points
-        integrand = ws * s1_sq[theta_indices] + wp * s2_sq[theta_indices]
+        ### Scattering Integration ###
+        # Compute size parameters and geometric cross sections
+        size_parameters = np.pi / self.laser_wavelength * diameters
+        geometric_cross_sections = np.pi * (diameters / 2) ** 2
 
-        # Reshape back to (n_theta, n_phi) grid
-        integrand_grid = integrand.reshape(n_theta, n_phi)
+        # Loop through each diameter and compute S1, S2, and integrand for all points
+        truncated_cscas = []
+        for size_parameter, geometric_cross_section in zip(
+            size_parameters, geometric_cross_sections
+        ):
+            # Compute S1, S2
+            mp_s1s2 = S1_S2(
+                m=ri, x=size_parameter, mu=np.cos(theta_values), norm="qsca"
+            )
+            s1_sq = np.abs(mp_s1s2[0]) ** 2
+            s2_sq = np.abs(mp_s1s2[1]) ** 2
 
-        # Use Simpson's rule for both dimensions
-        theta_integrand = np.zeros(n_theta)
-        for j in range(n_theta):
-            # Integrate over phi using Simpson's rule
-            theta_integrand[j] = scipy.integrate.simpson(
-                integrand_grid[j, :], x=phi_values_per_theta[j]
-            ) * np.sin(theta_values[j])
+            # Compute integrand for all points
+            integrand = ws * s1_sq[theta_indices] + wp * s2_sq[theta_indices]
 
-        # Integrate over theta using Simpson's rule
-        total_signal = scipy.integrate.simpson(theta_integrand, x=theta_values)
+            # Reshape back to (n_theta, n_phi) grid
+            integrand_grid = integrand.reshape(n_theta, n_phi)
 
-        geometric_cross_section = np.pi * (diameter / 2) ** 2
-        truncated_csca = np.array(total_signal * geometric_cross_section, dtype=float)
-        return truncated_csca
+            # Use Simpson's rule for both dimensions
+            theta_integrand = np.zeros(n_theta)
+            for j in range(n_theta):
+                # Integrate over phi using Simpson's rule
+                theta_integrand[j] = scipy.integrate.simpson(
+                    integrand_grid[j, :], x=phi_values_per_theta[j]
+                ) * np.sin(theta_values[j])
+
+            # Integrate over theta using Simpson's rule
+            total_signal = scipy.integrate.simpson(theta_integrand, x=theta_values)
+
+            # Compute truncated cross section
+            truncated_cscas.append(
+                np.array(total_signal * geometric_cross_section, dtype=np.float64)
+            )
+
+        return np.array(truncated_cscas, dtype=np.float64)
 
     def estimate_signal_noise(
         self,
@@ -298,12 +322,7 @@ class OpticalParticleSpectrometer:
         if n_phi is not None:
             kwargs["n_phi"] = n_phi
 
-        trunc_csca = []
-        for diameter in diameters:
-            trunc_csca.append(
-                self.truncated_scattering_cross_section(ri, diameter, **kwargs)
-            )
-        trunc_csca = np.array(trunc_csca, dtype=float)
+        trunc_csca = self.truncated_scattering_cross_section(ri, diameters, **kwargs)
 
         signal, noise = detector.estimate_signal_noise(self, trunc_csca)
 

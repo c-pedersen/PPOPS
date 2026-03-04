@@ -46,7 +46,7 @@ def test_Qsca_truncation():
 
             trunc_qsca = (
                 ops.truncated_scattering_cross_section(
-                    ri=ri, diameter=diameter, n_theta=151, n_phi=151
+                    ri=ri, diameters=diameter, n_theta=151, n_phi=151
                 )
                 / geometric_cross_section
             )

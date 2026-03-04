@@ -126,30 +126,30 @@ def test_aerosol_parameters():
     # Test refractive index inputs
     custom_ri = 1.5 + 0.01j
     ops_custom = ppops.OpticalParticleSpectrometer()
-    qsca = ops_custom.truncated_scattering_cross_section(ri=custom_ri, diameter=1.0)
+    qsca = ops_custom.truncated_scattering_cross_section(ri=custom_ri, diameters=1.0)
     assert isinstance(qsca, np.ndarray)
 
     # Test with invalid refractive index (negative real part)
     with pytest.raises(ValueError):
-        ops_custom.truncated_scattering_cross_section(ri=-1.5 + 0.01j, diameter=1.0)
+        ops_custom.truncated_scattering_cross_section(ri=-1.5 + 0.01j, diameters=1.0)
 
     # Test with invalid refractive index (negative imaginary part)
     with pytest.raises(ValueError):
-        ops_custom.truncated_scattering_cross_section(ri=1.5 - 0.01j, diameter=1.0)
+        ops_custom.truncated_scattering_cross_section(ri=1.5 - 0.01j, diameters=1.0)
 
     # Test with invalid diameter (negative value)
     with pytest.raises(ValueError):
-        ops_custom.truncated_scattering_cross_section(ri=custom_ri, diameter=-1.0)
+        ops_custom.truncated_scattering_cross_section(ri=custom_ri, diameters=-1.0)
 
     # Test with invalid diameter (zero value)
     with pytest.raises(ValueError):
-        ops_custom.truncated_scattering_cross_section(ri=custom_ri, diameter=0)
+        ops_custom.truncated_scattering_cross_section(ri=custom_ri, diameters=0)
 
     # Test large and small diameters
     with pytest.warns(UserWarning):
-        ops_custom.truncated_scattering_cross_section(ri=custom_ri, diameter=200.0)
+        ops_custom.truncated_scattering_cross_section(ri=custom_ri, diameters=200.0)
     with pytest.warns(UserWarning):
-        ops_custom.truncated_scattering_cross_section(ri=custom_ri, diameter=0.0001)
+        ops_custom.truncated_scattering_cross_section(ri=custom_ri, diameters=0.0001)
 
 
 def test_integration_parameters():
@@ -161,31 +161,31 @@ def test_integration_parameters():
     # Test with invalid n_theta and n_phi (negative values)
     with pytest.raises(ValueError):
         ops_custom.truncated_scattering_cross_section(
-            ri=1.5 + 0.01j, diameter=1.0, n_theta=-19, n_phi=9
+            ri=1.5 + 0.01j, diameters=1.0, n_theta=-19, n_phi=9
         )
     with pytest.raises(ValueError):
         ops_custom.truncated_scattering_cross_section(
-            ri=1.5 + 0.01j, diameter=1.0, n_theta=33, n_phi=-21
+            ri=1.5 + 0.01j, diameters=1.0, n_theta=33, n_phi=-21
         )
 
     # Test with zero n_theta and n_phi
     with pytest.raises(ValueError):
         ops_custom.truncated_scattering_cross_section(
-            ri=1.5 + 0.01j, diameter=1.0, n_theta=0, n_phi=11
+            ri=1.5 + 0.01j, diameters=1.0, n_theta=0, n_phi=11
         )
     with pytest.raises(ValueError):
         ops_custom.truncated_scattering_cross_section(
-            ri=1.5 + 0.01j, diameter=1.0, n_theta=13, n_phi=0
+            ri=1.5 + 0.01j, diameters=1.0, n_theta=13, n_phi=0
         )
 
     # Test with even n_theta and n_phi
     with pytest.warns(UserWarning):
         ops_custom.truncated_scattering_cross_section(
-            ri=1.5 + 0.01j, diameter=1.0, n_theta=14, n_phi=11
+            ri=1.5 + 0.01j, diameters=1.0, n_theta=14, n_phi=11
         )
     with pytest.warns(UserWarning):
         ops_custom.truncated_scattering_cross_section(
-            ri=1.5 + 0.01j, diameter=1.0, n_theta=13, n_phi=18
+            ri=1.5 + 0.01j, diameters=1.0, n_theta=13, n_phi=18
         )
 
 
