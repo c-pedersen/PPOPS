@@ -53,6 +53,7 @@ dev = [
     "ruff",
     "mypy",
     "ipykernel>=6.0.0",
+    "build",
 ]
 validation = [
     "matplotlib>=3.0.0",
