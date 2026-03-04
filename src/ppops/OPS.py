@@ -86,7 +86,7 @@ class OpticalParticleSpectrometer:
         if aerosol_mirror_separation <= 0:
             raise ValueError("Aerosol-mirror separation must be positive.")
 
-        # Ensure variables are close to expected mangitude
+        # Ensure variables are close to expected magnitude
         if np.any(laser_wavelength > 2) or np.any(laser_wavelength < 0.2):
             warn(
                 "Laser wavelength outside of expected range. "
