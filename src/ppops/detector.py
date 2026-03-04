@@ -149,6 +149,13 @@ def laser_peak_power_density(
             "Please verify the input values."
         )
 
+    if laser_power < 0:
+        raise ValueError("Laser power must be non-negative.")
+    if laser_power > 1e3 or laser_power < 1e-3:
+        warn(
+            "Laser power in milliwatts seems unrealistic. "
+            "Please verify the input value."
+        )
     beam_area = math.pi * (beam_major / 2 * 1e3) * (beam_minor / 2 * 1e3)  # µm^2
     return 2 * laser_power * 1e-3 / beam_area  # W/µm^2
 

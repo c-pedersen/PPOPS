@@ -75,14 +75,14 @@ echo ""
 
 # Testing documentation
 echo "Testing documentation build..."
-if [ ! -d "docs/src" ]; then
-    echo "Error: docs/src directory not found"
+if [ ! -d "docs/source" ]; then
+    echo "Error: docs/source directory not found"
     exit 1
 fi
 
-pip install -q -r docs/src/requirements.txt 2>/dev/null || true
+pip install -q -r docs/source/requirements.txt 2>/dev/null || true
 
-cd docs/src
+cd docs/source
 rm -rf _build
 make html > /tmp/sphinx_build.log 2>&1
 if grep -qi "error" /tmp/sphinx_build.log; then
