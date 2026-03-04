@@ -6,12 +6,12 @@ Handles POPS geometry and polarization calculations.
 This module includes functions for computing geometric parameters related to
 light scattering from the particle-laser interaction zone to the POPS mirror.
 It also calculates polarization weighting factors (s- and p-components) for
-the instrument’s optical collection efficiency.
+the instrument's optical collection efficiency.
 
 Functions:
-    ptz2r_sc(OpticalParticleSpectrometer, phi, theta): Computes mirror
-    intersection geometry, maximum azimuthal angle, and polarization
-    weights.
+- ptz2r_sc(OpticalParticleSpectrometer, phi, theta): Computes mirror
+intersection geometry, maximum azimuthal angle, and polarization
+weights.
 """
 
 from __future__ import annotations

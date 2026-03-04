@@ -8,10 +8,6 @@ instrument's geometry and optical properties. The implementation uses
 numerical integration over the instrument's angular acceptance,
 leveraging Mie scattering calculations from mie_modules.py and geometric
 transformations from geometry.py.
-
-References:
-    - Bohren & Huffman (1983), "Absorption and Scattering of Light by Small Particles"
-    - C. Mätzler (2002), Mie scattering implementations
 """
 
 from warnings import warn

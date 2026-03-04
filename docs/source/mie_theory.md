@@ -19,8 +19,6 @@ It provides functions for calculating:
 
 These quantities follow standard formulations from electromagnetic scattering theory and are commonly used in aerosol physics, atmospheric science, and optical particle characterization.
 
----
-
 ## Overview
 
 ### Functions Included
@@ -33,20 +31,14 @@ These quantities follow standard formulations from electromagnetic scattering th
 
 These are the fundamental components needed to compute phase functions, scattering efficiencies, polarization ratios, and full intensity distributions from Mie theory.
 
----
-
 ## Dependencies
 
-```python
+``` python
 import numpy as np
 from scipy.special import spherical_jn, spherical_yn
 ```
 
----
-
 ## Function Documentation
-
----
 
 ### `mie_ab(m: complex, x: float) -> np.ndarray`
 
@@ -61,6 +53,7 @@ Compute the Mie coefficients $a_n$ and $b_n$, which describe how a spherical par
   Size parameter, defined as, $x = \frac{\pi D}{\lambda}$
 
 **Returns:**  
+
 A 2×N NumPy array:
 
 - `a_n` — electric multipole coefficients  
@@ -99,7 +92,8 @@ These functions capture the angular dependence of scattered light.
 - **`n_max`** (*int*) — maximum multipole order
 
 **Returns:**  
-A 2×N array: `[π_n(u), τ_n(u)]`.
+
+A 2×N array: `[π_n(u), τ_n(u)]` .
 
 **Internal Notes:**
 
@@ -121,22 +115,20 @@ Compute the Mie scattering amplitude functions $S_1$ and $S_2$, which fully char
 - **`u`** (*float*) — $\cos(\theta)$
 
 **Returns:**  
-A 2-element array: `[S1, S2]`.
+A 2-element array: `[S1, S2]` .
 
 **Computation Outline:**
 
 1. Determine `n_max` using the standard approximation.
-2. Compute Mie coefficients `a_n`, `b_n`.
-3. Compute angular functions `π_n(u)`, `τ_n(u)`.
+2. Compute Mie coefficients `a_n`, `b_n` .
+3. Compute angular functions `π_n(u)`, `τ_n(u)` .
 4. Apply the weighting: $\frac{2n + 1}{n(n+1)}$
 5. Form the scattering amplitudes:
    $S_1 = \sum_n \left(a_n \pi_n + b_n \tau_n\right), \quad
    S_2 = \sum_n \left(a_n \tau_n + b_n \pi_n\right)$
 
 These can be further used to compute intensity patterns:
-$I(\theta) \propto |S_1|^2 \quad \text{or} \quad |S_2|^2$
-
----
+$I(\theta) \propto \lvert S_1 \rvert ^2 \quad \text{or} \quad  \lvert S_2 \rvert ^2$
 
 ## References
 

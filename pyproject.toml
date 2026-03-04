@@ -42,11 +42,12 @@ test = [
 docs = [
     "sphinx>=8.0.0",
     "sphinx-mdinclude",
-    "sphinx-autodoc-typehints>=1.25.0",
+    "sphinx-autodoc-typehints>=3.2.0",
     "sphinx-autoapi>=3.0.0",
     "nbsphinx>=0.9.0",
     "pandoc>=2.0.0",
     "ipykernel>=7.0.0",
+    "sphinx_rtd_theme>=3.1.0",
 ]
 dev = [
     "twine>=6.0.0",

@@ -2,6 +2,7 @@ import pytest
 import numpy as np
 import sys
 import os
+import warnings
 
 # Workaround to resolve path issues/being unable to see src directory
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -23,7 +24,9 @@ from ppops.detector import (  # noqa: E402
 
 def test_laser_power_density_zero_power():
     """Test that zero power results in zero density."""
-    assert laser_peak_power_density(0, 3, 1) == 0.0
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", UserWarning)
+        assert laser_peak_power_density(0, 3, 1) == 0.0
 
 
 def test_laser_power_density_negative_inputs():

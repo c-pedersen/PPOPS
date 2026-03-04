@@ -7,26 +7,25 @@ This module includes functions to compute the expected signal and noise
 levels for a detector based on the hardware specifications.
 
 Constants:
-    - ELEMENTARY_CHARGE: Electron charge (C)
-    - ANODE_RADIANT_SENSITIVITY: Anode radiant sensitivity (A/W)
-    - DARK_CURRENT: Dark current noise (A)
-    - BANDWIDTH: Bandwidth (Hz)
-    - INPUT_CURRENT_NOISE: Preamplifier input current noise (A/√Hz)
+- ELEMENTARY_CHARGE: Electron charge (C)
+- ANODE_RADIANT_SENSITIVITY: Anode radiant sensitivity (A/W)
+- DARK_CURRENT: Dark current noise (A)
+- BANDWIDTH: Bandwidth (Hz)
+- INPUT_CURRENT_NOISE: Preamplifier input current noise (A/√Hz)
 
 Functions:
-    - laser_power_density(laser_power, beam_major, beam_minor): Computes
-      the laser power density at the aerosol stream.
-    - estimate_signal_noise(truncated_csca, laser_power): Estimates
-      signal and noise levels for a given truncated scattering cross
-      section and laser power.
+- laser_power_density(laser_power, beam_major, beam_minor): Computes
+the laser power density at the aerosol stream.
+- estimate_signal_noise(truncated_csca, laser_power): Estimates signal
+and noise levels for a given truncated scattering cross section and
+laser power.
 
 Citations:
-    - Gao, R.S., et al. 2016. A light-weight, high-sensitivity particle
-      spectrometer for PM2.5 aerosol measurements. Aerosol Science and
-      Technology 50, 88-99.
-      https://doi.org/10.1080/02786826.2015.1131809
-    - Thor Labs. TIA60 Transimpedance Amplifier Datasheet. https://www.thorlabs.com/drawings/c627bb63fbc792f9-BE0A1D53-FE71-D4E9-369F32E2683F2FB6/TIA60-SpecSheet.pdf
-    - Hamamatsu Photonics. H10720 Series Photomultiplier Tube Datasheet. https://www.hamamatsu.com/content/dam/hamamatsu-photonics/sites/documents/99_SALES_LIBRARY/etd/H10720_H10721_TPMO1062E.pdf
+- Gao, R.S., et al. 2016. A light-weight, high-sensitivity particle
+spectrometer for PM2.5 aerosol measurements. Aerosol Science and
+Technology 50, 88-99. https://doi.org/10.1080/02786826.2015.1131809
+- Thor Labs. TIA60 Transimpedance Amplifier Datasheet. https://www.thorlabs.com/drawings/c627bb63fbc792f9-BE0A1D53-FE71-D4E9-369F32E2683F2FB6/TIA60-SpecSheet.pdf
+- Hamamatsu Photonics. H10720 Series Photomultiplier Tube Datasheet. https://www.hamamatsu.com/content/dam/hamamatsu-photonics/sites/documents/99_SALES_LIBRARY/etd/H10720_H10721_TPMO1062E.pdf
 
 """
 
@@ -112,8 +111,8 @@ def laser_peak_power_density(
     spot_diameter = 2M² * λ * L / (π * w_initial)
     where L = 25 mm, w_initial_vertical = 3 mm.
     DOF = 2 * π * (spot_diameter / 2)² / (M² * λ)
-    beam_diameter = spot_diameter * sqrt(
-        1 + (distance_from_lens - L)² / (DOF/2)²) = 6 mm
+    beam_diameter = spot_diameter
+    * sqrt(1 + (distance_from_lens - L)² / (DOF/2)²) = 6 mm
 
     Parameters
     ----------
@@ -125,9 +124,10 @@ def laser_peak_power_density(
     beam_minor : float, optional
         Length of minor axis of the oval laser beam at the aerosol
         stream in millimeters. Default is 0.054.
+
     Returns
     -------
-    float
+    power_density : float
         Optical power density (W/µm^2).
 
     References
@@ -181,9 +181,9 @@ def estimate_signal_noise(
 
     Returns
     -------
-    float or np.ndarray
+    signal : float or ndarray
         Estimated signal current (A).
-    float or np.ndarray
+    noise : float or ndarray
         Estimated noise (A).
     """
 

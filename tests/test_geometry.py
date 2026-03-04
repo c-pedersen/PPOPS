@@ -1,6 +1,7 @@
 import numpy as np
 import sys
 import os
+import warnings
 
 # Workaround to resolve path issues/being unable to see src directory
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -84,7 +85,9 @@ def test_degenerate_forward_scattering():
     theta = np.array([0.0])  # Forward scattering
     ops = OpticalParticleSpectrometer()
 
-    _, _, _, _, ws, wp, _ = ptz2r_sc(ops=ops, phi=phi, theta=theta)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", RuntimeWarning)
+        _, _, _, _, ws, wp, _ = ptz2r_sc(ops=ops, phi=phi, theta=theta)
 
     # In the degenerate case (n2 < 1e-12), the function should return:
     # ws = 1.0 and wp = 0.0
