@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ppops"
-version = "0.0.0.dev"
+version = "0.0.0"
 authors = [
   { name = "Corey Pedersen", email = "coreyped@gmail.com" },
 ]
