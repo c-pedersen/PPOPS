@@ -21,16 +21,16 @@ for p in sys.path:
 print("------------------------------------------")
 
 # The error label at the start of the file (E402) suppresses the ruff error that the module import is not at the top of the file
-import validate_mie  # noqa: E402
+import validate_mie  # pyright: ignore[reportMissingImports] # noqa: E402
 
 
 def test_validate_mie():
     """
     Test the validate_mie function to ensure it runs without errors.
     """
-    iors = [1.4, 1.5, 1.6]
+    ris = [1.4, 1.5, 1.6]
     diameters = [0.5, 1.0, 1.5]
 
-    for ior in iors:
+    for ri in ris:
         for diameter in diameters:
-            validate_mie.compare_s1s2_methods(ior=ior, diameter=diameter)
+            validate_mie.compare_s1s2_methods(ri=ri, diameter=diameter)

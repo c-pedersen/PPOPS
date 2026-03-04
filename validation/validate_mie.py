@@ -20,7 +20,7 @@ from src.ppops.OPS import OpticalParticleSpectrometer  # noqa: E402
 
 
 def compare_s1s2_methods(
-    ior: complex,
+    ri: complex,
     diameter: float,
     plot: bool = False,
 ) -> None:
@@ -30,7 +30,7 @@ def compare_s1s2_methods(
 
     Parameters
     ----------
-    ior : complex
+    ri : complex
         Complex refractive index of the particle.
     diameter : float
         Diameter of the particle in micrometers.
@@ -51,12 +51,12 @@ def compare_s1s2_methods(
     s1 = np.zeros_like(theta_values, dtype=complex)
     s2 = np.zeros_like(theta_values, dtype=complex)
     for j, theta in enumerate(theta_values):
-        s12 = mie_s12(ior, size_parameter, np.cos(theta))
+        s12 = mie_s12(ri, size_parameter, np.cos(theta))
         s1[j], s2[j] = s12[0], s12[1]
 
     # Compute S1 and S2 using miepython package
     miepython_s1, miepython_s2 = miepython.core.S1_S2(
-        m=ior,
+        m=ri,
         x=size_parameter,
         mu=np.cos(theta_values),
         norm="wiscombe",
@@ -71,7 +71,7 @@ def compare_s1s2_methods(
         )
         plt.plot(np.real(s1), np.imag(s1), label="Custom Mie Modules", marker="x")
         plt.xlabel("Real part")
-        plt.title(f"Comparison of S1 for IOR={ior} and Diameter={diameter} µm")
+        plt.title(f"Comparison of S1 for RI={ri} and Diameter={diameter} µm")
         plt.legend()
         plt.grid(True)
         plt.savefig(f"{project_root}/validation/s1_comparison.png", dpi=600)
@@ -82,5 +82,5 @@ def compare_s1s2_methods(
 
 if __name__ == "__main__":
     # Example test case
-    compare_s1s2_methods(ior=1.4 + 0j, diameter=1.0, plot=True)
+    compare_s1s2_methods(ri=1.4 + 0j, diameter=1.0, plot=True)
     print("S1 and S2 functions match between custom implementation and miepython.")

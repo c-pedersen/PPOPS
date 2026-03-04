@@ -136,7 +136,7 @@ class OpticalParticleSpectrometer:
 
     def truncated_scattering_cross_section(
         self,
-        ior: complex,
+        ri: complex,
         diameter: float,
         n_theta: int = 51,
         n_phi: int = 41,
@@ -150,7 +150,7 @@ class OpticalParticleSpectrometer:
 
         Parameters
         ----------
-        ior : complex
+        ri : complex
             Complex refractive index of the particle.
         diameter : float
             Diameter of the particle in micrometers.
@@ -167,19 +167,26 @@ class OpticalParticleSpectrometer:
             Truncated scattering cross-section in square micrometers.
         """
         # Validate inputs
-        if np.any(np.imag(ior) < 0):
+        if np.any(np.imag(ri) < 0) or np.any(np.real(ri) < 1):
             raise ValueError(
-                "Imaginary part of refractive indices must be non-negative."
+                "Imaginary part of refractive indices must be non-negative and real"
+                "part must be >= 1."
             )
-        if diameter < 0.001 or diameter > 10:
+        if diameter <= 0:
+            raise ValueError("Diameter must be a positive value.")
+        if diameter < 0.001 or diameter > 100:
             warn(
                 "Diameter outside of expected range. Verify diameter is in micrometers."
             )
 
-        if not isinstance(n_theta, int) or n_theta <= 0 or n_theta % 2 == 0:
+        if not isinstance(n_theta, int) or n_theta <= 0:
             raise ValueError("n_theta must be a positive, odd integer.")
-        if not isinstance(n_phi, int) or n_phi <= 0 or n_phi % 2 == 0:
+        if n_theta % 2 == 0:
+            warn("n_theta should be an odd integer for Simpson's rule.")
+        if not isinstance(n_phi, int) or n_phi <= 0:
             raise ValueError("n_phi must be a positive, odd integer.")
+        if n_phi % 2 == 0:
+            warn("n_phi should be an odd integer for Simpson's rule.")
 
         # Derived quantities
         theta_max = np.arctan(self.mirror_radius / self.h)
@@ -190,7 +197,7 @@ class OpticalParticleSpectrometer:
         r_min = np.sqrt(self.mirror_radius**2 + self.h**2)
 
         # Compute S1, S2
-        mp_s1s2 = S1_S2(m=ior, x=size_parameter, mu=np.cos(theta_values), norm="qsca")
+        mp_s1s2 = S1_S2(m=ri, x=size_parameter, mu=np.cos(theta_values), norm="qsca")
         s1_sq = np.abs(mp_s1s2[0]) ** 2
         s2_sq = np.abs(mp_s1s2[1]) ** 2
 
@@ -246,7 +253,7 @@ class OpticalParticleSpectrometer:
 
     def estimate_signal_noise(
         self,
-        ior: complex,
+        ri: complex,
         diameters: float | ArrayLike,
         n_theta: int | None = None,
         n_phi: int | None = None,
@@ -257,7 +264,7 @@ class OpticalParticleSpectrometer:
 
         Parameters
         ----------
-        ior : complex
+        ri : complex
             Complex refractive index of the particle.
         diameters : float | np.ndarray
             Diameter of the particle in micrometers.
@@ -276,7 +283,10 @@ class OpticalParticleSpectrometer:
             Estimated noise amplitude in units of Amperes (A).
         """
         try:
-            diameters = np.asarray(diameters, dtype=float)
+            if isinstance(diameters, (float, int)):
+                diameters = np.array([diameters], dtype=float)
+            else:
+                diameters = np.asarray(diameters, dtype=float)
         except Exception as e:
             raise TypeError(
                 "Diameters must be convertible to a numpy array of floats"
@@ -288,11 +298,12 @@ class OpticalParticleSpectrometer:
         if n_phi is not None:
             kwargs["n_phi"] = n_phi
 
-        trunc_csca = np.empty(len(diameters))
-        for i, diameter in enumerate(diameters):
-            trunc_csca[i] = self.truncated_scattering_cross_section(
-                ior, diameter, **kwargs
+        trunc_csca = []
+        for diameter in diameters:
+            trunc_csca.append(
+                self.truncated_scattering_cross_section(ri, diameter, **kwargs)
             )
+        trunc_csca = np.array(trunc_csca, dtype=float)
 
         signal, noise = detector.estimate_signal_noise(self, trunc_csca)
 
