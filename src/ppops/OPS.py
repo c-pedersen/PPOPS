@@ -282,17 +282,16 @@ class OpticalParticleSpectrometer:
                 "Diameters must be convertible to a numpy array of floats"
             ) from e
 
-        trunc_csca = np.array([])
         kwargs = {}
         if n_theta is not None:
             kwargs["n_theta"] = n_theta
         if n_phi is not None:
             kwargs["n_phi"] = n_phi
 
-        for diameter in diameters:
-            trunc_csca = np.append(
-                trunc_csca,
-                self.truncated_scattering_cross_section(ior, diameter, **kwargs),
+        trunc_csca = np.empty(len(diameters))
+        for i, diameter in enumerate(diameters):
+            trunc_csca[i] = self.truncated_scattering_cross_section(
+                ior, diameter, **kwargs
             )
 
         signal, noise = detector.estimate_signal_noise(self, trunc_csca)

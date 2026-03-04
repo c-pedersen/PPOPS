@@ -11,23 +11,24 @@ This repository simulates the performance of a simple Optical Particle
 Spectrometer (OPS) using a physics-based model. The default optical
 system is based on Gao et al., Aerosol Sci. Technol., 2016, which is
 also what the POPS instrument sold by Handix Scientific is based on. The
-PPOPS model is semi-validated in that PPOPS modeled signal was within 50% of the
-actual signal of a POPS unit from Handix Scientific (see validation
-section of PPOPS website for more information).
+PPOPS model is semi-validated in that PPOPS modeled signal was within
+50% of the actual signal of a POPS unit from Handix Scientific (see
+validation section of PPOPS website for more information).
 
 The PPOPS model calculates the amount and direction of scattered light
 by aerosols according to Mie theory. The scattered light is integrated
-over the solid-angle acceptance of the collection mirror to calculate a truncated scattering cross section (the effective scattering cross section). This
-truncated scattering cross section is then used to calculate the
-instrument signal and noise current.
+over the solid-angle acceptance of the collection mirror to calculate a
+truncated scattering cross section (the effective scattering cross
+section). This truncated scattering cross section is then used to
+calculate the instrument signal and noise current.
 
 To summarize, the PPOPS workflow includes,
 
-1. Use calculate the scattering amplitudes (`S₁`, `S₂`) according to Mie
-theory.
-   1. Computing Mie coefficients (`a_n`, `b_n`) for electric and magnetic
+1. Use miepython to calculate the scattering amplitudes (`S₁`, `S₂`)
+according to Mie theory.
+   1. Compute Mie coefficients (`a_n`, `b_n`) for electric and magnetic
 scattering modes.
-   1. Generating angular functions (`π_n`, `τ_n`) that describe
+   1. Generate angular functions (`π_n`, `τ_n`) that describe
 angle-dependent intensity.
 1. Integrating over the OPS collection mirror’s polar and azimuthal
 acceptance to compute the truncated scattering cross section.
@@ -38,7 +39,7 @@ comparison with POPS data.
 
 ## Assumptions
 
-This package make several assumptions:
+This package makes several assumptions:
 
 1. Particles are perfectly spherical.
 2. Scattering is elastic.
@@ -56,6 +57,7 @@ pip install ppops
 ```
 
 ## Usage
+
 See PPOPS website for more information.
 
 ```Python
@@ -68,7 +70,7 @@ ops.estimate_signal_noise(diameters = [0.1, 0.5, 1.0], ior = 1.5+0.001j)
 
 ## References
 
-Gao, R.S., Telg, H., McLaughlin, R.J., Ciciora, S.J., Watts, L.A., Richardson, M.S., Schwarz, J.P., Perring, A.E., Thornberry, T.D., Rollins, A.W., Markovic, M.Z., Bates, T.S., Johnson, J.E., Fahey, D.W., 2016. A light-weight, high-sensitivity particle spectrometer for PM2.5 aerosol measurements. Aerosol Science and Technology 50, 88–99. https://doi.org/10.1080/02786826.2015.1131809
+Gao, R.S., Telg, H., McLaughlin, R.J., Ciciora, S.J., Watts, L.A., Richardson, M.S., Schwarz, J.P., Perring, A.E., Thornberry, T.D., Rollins, A.W., Markovic, M.Z., Bates, T.S., Johnson, J.E., Fahey, D.W., 2016. A light-weight, high-sensitivity particle spectrometer for PM2.5 aerosol measurements. Aerosol Science and Technology 50, 88–99. <https://doi.org/10.1080/02786826.2015.1131809>
 
 miepython: 10.5281/zenodo.7949263
 

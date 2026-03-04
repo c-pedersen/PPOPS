@@ -119,7 +119,7 @@ def ptz2r_sc(
     elif ops.laser_polarization == "horizontal":
         e0 = np.array([1, 0, 0])  # Horizontal polarization (x-direction)
     elif ops.laser_polarization == "vertical":
-        e0 = np.array([0, 0, 1])  # Vertical polarization (y-direction)
+        e0 = np.array([0, 0, 1])  # Vertical polarization (z-direction)
     else:
         raise ValueError(
             "Invalid polarization state. Only 'unpolarized', 'horizontal', "

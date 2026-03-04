@@ -71,6 +71,15 @@ def anode_radiant_sensitivity(PMT_control_voltage: float) -> float:
     float
         Anode radiant sensitivity in A/W.
     """
+    if PMT_control_voltage <= 0:
+        raise ValueError("PMT control voltage must be a positive value.")
+    if PMT_control_voltage > 1.1 or PMT_control_voltage < 0.5:
+        warn(
+            "H10720_110 PMT control voltage should be between 0.5 and "
+            "1.1 V. Please verify the input value unless you are using "
+            "a different PMT."
+        )
+
     gain = 10 ** (
         H10720_110_GAIN_SLOPE * np.log10(PMT_control_voltage)
         + H10720_110_GAIN_INTERCEPT
@@ -86,13 +95,13 @@ def laser_peak_power_density(
 ) -> float:
     """Return the laser peak power density at the aerosol stream.
     Assumes a Gaussian beam profile and that the beam is focused at the
-    aerosol stream.
+    aerosol stream. Also assumes that the aerosol passes through the
+    center of the beam where the power density is highest.
 
     The initial beam dimensions are taken from Gao et al. 2016 and the
     beam waist at the aerosol stream is estimated below assuming a
     Gaussian beam profile. The laser power density is then calculated as
-    the laser power divided by the beam area at the aerosol stream
-    assuming a uniform power distribution.
+    the laser power divided by the beam area at the aerosol stream.
 
     Horizontal beam waist at aerosol stream:
     spot_diameter = 4M² * λ * L / (π * w_initial) = 0.054 mm
@@ -134,7 +143,7 @@ def laser_peak_power_density(
 
     if beam_major <= 0 or beam_minor <= 0:
         raise ValueError("Beam major and minor axes must be positive values.")
-    if beam_major > 10 or beam_minor > 10 or beam_major < 1e-3 or beam_minor < 1e-3:
+    if beam_major > 10 or beam_minor > 10 or beam_major < 1e-4 or beam_minor < 1e-4:
         warn(
             "Beam dimensions in millimeters seem unrealistic. "
             "Please verify the input values."

@@ -23,17 +23,17 @@ from ppops.detector import (  # noqa: E402
 
 def test_laser_power_density_zero_power():
     """Test that zero power results in zero density."""
-    assert laser_peak_power_density(0, 3e-3, 1e-3) == 0.0
+    assert laser_peak_power_density(0, 3, 1) == 0.0
 
 
 def test_laser_power_density_negative_inputs():
     """Test that negative power or dimensions raise ValueErrors."""
     # Negative dimensions
     with pytest.raises(ValueError, match="Beam major and minor axes must be positive"):
-        laser_peak_power_density(100, -3e-3, 1e-3)
+        laser_peak_power_density(100, -3, 1)
 
     with pytest.raises(ValueError, match="Beam major and minor axes must be positive"):
-        laser_peak_power_density(100, 3e-3, 0)
+        laser_peak_power_density(100, 3, 0)
 
 
 def test_laser_power_density_warnings_dimensions():
@@ -44,11 +44,11 @@ def test_laser_power_density_warnings_dimensions():
     ):
         laser_peak_power_density(100, 1000, 5)
 
-    # Too small (< 1e-5)
+    # Too small (< 1e-4)
     with pytest.warns(
         UserWarning, match="Beam dimensions in millimeters seem unrealistic"
     ):
-        laser_peak_power_density(100, 3, 1e-4)
+        laser_peak_power_density(100, 3, 1e-5)
 
 
 def test_estimate_signal_noise_scalar():
